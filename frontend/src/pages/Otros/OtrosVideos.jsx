@@ -65,7 +65,7 @@ function OtrosVideos() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Otros Videos</h2>
+      <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Vlog</h2>
       <div className="grid grid-cols-1 gap-8">
         {listaDeVideos.map((video) => (
           <div key={video.id} className="bg-white shadow-md rounded-lg p-4">

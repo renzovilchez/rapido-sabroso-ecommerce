@@ -8,7 +8,6 @@ function Index() {
         { label: 'Diseño de Hojas membretadas', path: '/otros/hojas-membretadas' },
         { label: 'Logos', path: '/otros/logos' },
         { label: 'Tarjetas', path: '/otros/tarjetas' },
-        { label: 'Videos', path: '/otros/videos' },
     ];
 
     return (

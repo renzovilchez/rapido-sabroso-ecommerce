@@ -26,8 +26,8 @@ const tipoProductoController = {
 
   create: async (req, res) => {
     try {
-      const { nombre, descripcion } = req.body;
-      const nuevo = await TipoProducto.create(nombre, descripcion);
+      const { nombre, imagen, id_categoria } = req.body;
+      const nuevo = await TipoProducto.create({ nombre, imagen, id_categoria });
       res.status(201).json(nuevo);
     } catch (err) {
       res.status(500).json({ error: 'Error al crear el tipo de producto' });
@@ -37,8 +37,8 @@ const tipoProductoController = {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nombre, descripcion } = req.body;
-      const actualizado = await TipoProducto.update(id, nombre, descripcion);
+      const { nombre, imagen, id_categoria } = req.body;
+      const actualizado = await TipoProducto.update(id, { nombre, imagen, id_categoria });
       if (actualizado) {
         res.json(actualizado);
       } else {

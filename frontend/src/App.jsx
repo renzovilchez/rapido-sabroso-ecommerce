@@ -56,6 +56,8 @@ import ProductosProductos from './pages/Menu/Productos'
 
 import HistorialPedido from './pages/HistorialPedidos';
 
+import Despedida from './pages/despedida';
+
 function App() {
   return (
     <Routes>
@@ -125,6 +127,7 @@ function App() {
         <Route path="/pago" element={<Pago />} />
         <Route path="/comprobante/:idPedido" element={<Comprobante />} />
 
+        <Route path="/despedida" element={<Despedida />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

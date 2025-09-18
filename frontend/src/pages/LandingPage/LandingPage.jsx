@@ -52,7 +52,7 @@ const LandingPage = () => {
               to="/home"
               className="bg-black text-white px-8 py-4 rounded-full text-lg hover:bg-gray-800 transition"
             >
-              Ir al sitio
+              Ir a la página
             </Link>
           </div>
 
