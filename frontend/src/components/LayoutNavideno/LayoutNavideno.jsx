@@ -1,13 +1,13 @@
-import Navbar from '../Navbar';
-import Footer from '../Footer';
-import { Outlet } from 'react-router-dom';
-import musicaCriolla from "../../assets/audio/Navidad Criolla.mp3";
-import './LayoutNavideno.css';
+import Navbar from "../Navbar";
+import Footer from "../Footer";
+import { Outlet } from "react-router-dom";
+// import musicaCriolla from "../../assets/audio/Navidad Criolla.mp3";
+import "./LayoutNavideno.css";
 
 const LayoutNavideno = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <audio id="background-music" src={musicaCriolla} autoPlay loop hidden />
+      {/* <audio id="background-music" src={musicaCriolla} autoPlay loop hidden /> */}
       <div className="pointer-events-none fixed top-0 left-0 w-full h-full">
         {[...Array(30)].map((_, i) => (
           <div
