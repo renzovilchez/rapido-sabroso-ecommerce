@@ -1,12 +1,12 @@
-const FormularioMetodoNuevo = ({
-  mostrar,
-  nuevoMetodo,
+const NewMethodForm = ({
+  show,
+  newMethod,
   isLoading,
   onChange,
-  onCrear,
-  onCancelar, // <-- nuevo prop
+  onCreate,
+  onCancel,
 }) => {
-  if (!mostrar) return null;
+  if (!show) return null;
 
   return (
     <div className="mb-6 bg-white p-4 rounded shadow-md">
@@ -15,8 +15,8 @@ const FormularioMetodoNuevo = ({
       <label className="block mb-2 text-[#1f1f1f] font-semibold">Nombre del método</label>
       <input
         type="text"
-        name="nombre"
-        value={nuevoMetodo.nombre}
+        name="name"
+        value={newMethod.name}
         onChange={onChange}
         className="w-full p-2 mb-4 border border-gray-300 rounded"
       />
@@ -24,8 +24,8 @@ const FormularioMetodoNuevo = ({
       <label className="block mb-2 text-[#1f1f1f] font-semibold">Número o cuenta</label>
       <input
         type="text"
-        name="numero"
-        value={nuevoMetodo.numero}
+        name="number"
+        value={newMethod.number}
         onChange={onChange}
         className="w-full p-2 mb-4 border border-gray-300 rounded"
       />
@@ -33,7 +33,7 @@ const FormularioMetodoNuevo = ({
       <div className="flex justify-end gap-2">
         <button
           type="button"
-          onClick={onCancelar}
+          onClick={onCancel}
           disabled={isLoading}
           className="bg-red-600 text-white font-semibold py-2 px-4 rounded hover:bg-gray-400 transition-colors"
         >
@@ -42,7 +42,7 @@ const FormularioMetodoNuevo = ({
 
         <button
           type="button"
-          onClick={onCrear}
+          onClick={onCreate}
           disabled={isLoading}
           className="bg-[#facc15] text-[#1f1f1f] font-semibold py-2 px-4 rounded hover:bg-[#fef08a] transition-colors"
         >
@@ -53,4 +53,4 @@ const FormularioMetodoNuevo = ({
   );
 };
 
-export default FormularioMetodoNuevo;
+export default NewMethodForm;

@@ -7,7 +7,7 @@ import {
   ShoppingCart,
   User,
   LogOut,
-  Menu as MenuIcon,
+  AlignJustify,
   X,
   ChevronDown,
   Home,
@@ -20,7 +20,6 @@ import {
   Flame,
   Coffee,
   Sandwich,
-  Cookie,
   ClipboardList,
   Sparkles,
   Beef,
@@ -45,10 +44,10 @@ function normalizeString(str) {
 }
 
 function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [menus, setMenus] = useState([]);
-  const [productos, setProductos] = useState([]);
+  const [combos, setCombos] = useState([]);
+  const [products, setProducts] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const { cartItemCount, isLoggedIn, setIsLoggedIn } =
     useContext(GlobalContext);
@@ -60,49 +59,49 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Cargar menús (combos)
+  // Fetch combos
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/menus")
-      .then((res) => setMenus(res.data))
-      .catch((err) => console.error("Error al cargar menús:", err));
+      .get("http://localhost:5000/api/combos")
+      .then((res) => setCombos(res.data))
+      .catch((err) => console.error("Error al cargar combos:", err));
   }, []);
 
-  // Cargar productos (ármalo)
+  // Fetch products
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/productos")
-      .then((res) => setProductos(res.data))
+      .get("http://localhost:5000/api/products")
+      .then((res) => setProducts(res.data))
       .catch((err) => console.error("Error al cargar productos:", err));
   }, []);
 
   useEffect(() => {
-    setMenuOpen(false);
+    setNavOpen(false);
     setActiveDropdown(null);
   }, [location]);
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const toggleNav = () => setNavOpen(!navOpen);
 
   const handleLogout = () => {
     localStorage.removeItem("usuario");
     setIsLoggedIn(false);
   };
 
-  // Tipos únicos de menú (combos)
-  const tiposMenuUnicos = [
-    ...new Set(menus.map((menu) => menu.tipo_menu).filter(Boolean)),
+  // Unique combo categories
+  const uniqueComboCategories = [
+    ...new Set(combos.map((c) => c.productType).filter(Boolean)),
   ];
 
-  // Tipos únicos de producto (ármalo)
-  const tiposProductoUnicos = [
+  // Unique product categories
+  const uniqueProductCategories = [
     ...new Set(
-      productos.map((producto) => producto.tipoProducto).filter(Boolean),
+      products.map((product) => product.productType).filter(Boolean),
     ),
   ];
 
-  // Icono según tipo de COMBO/MENÚ
-  const getComboIcon = (tipo) => {
-    const name = tipo.toLowerCase();
+  // Get icon for combo category
+  const getComboIcon = (category) => {
+    const name = category.toLowerCase();
     if (name.includes("personal")) return Sparkles;
     if (name.includes("familiar")) return UtensilsCrossed;
     if (name.includes("duo") || name.includes("pareja")) return Sandwich;
@@ -110,9 +109,9 @@ function Navbar() {
     return Sparkles;
   };
 
-  // Icono según tipo de PRODUCTO (ármalo)
-  const getProductoIcon = (tipo) => {
-    const name = tipo.toLowerCase();
+  // Get icon for product category
+  const getProductIcon = (category) => {
+    const name = category.toLowerCase();
     // Hamburguesas
     if (name.includes("clasica")) return Beef;
     if (name.includes("especial")) return Flame;
@@ -174,14 +173,14 @@ function Navbar() {
               onMouseLeave={() => setActiveDropdown(null)}
             >
               <Link
-                to="/menu"
+                to="/carta"
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                  isActive("/menu")
+                  isActive("/carta")
                     ? "bg-amber-900 text-white"
                     : "text-gray-700 hover:bg-amber-50 hover:text-amber-900"
                 }`}
               >
-                <ClipboardList className="w-4 h-4" />
+                <UtensilsCrossed className="w-4 h-4" />
                 Carta
                 <ChevronDown
                   className={`w-3 h-3 transition-transform ${
@@ -194,64 +193,64 @@ function Navbar() {
                 <div className="absolute top-full left-0 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden">
                   {/* Ver toda la carta */}
                   <Link
-                    to="/menu"
+                    to="/carta"
                     className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 transition-colors"
                   >
-                    <ClipboardList className="w-4 h-4" />
+                    <UtensilsCrossed className="w-4 h-4" />
                     Ver toda la carta
                   </Link>
 
                   <div className="h-px bg-gray-100" />
 
-                  {/* COMBOS - Todos los tipos de menú */}
-                  {tiposMenuUnicos.length > 0 && (
-                    <div className="py-2">
-                      <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                        Combos
-                      </p>
-                      {tiposMenuUnicos.map((tipo) => {
-                        const Icon = getComboIcon(tipo);
-                        return (
-                          <Link
-                            key={tipo}
-                            to={`/menu/tipo/${normalizeString(tipo)}`}
-                            className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
-                          >
-                            <Icon className="w-4 h-4 text-amber-600" />
-                            <span className="capitalize">
-                              {tipo.replace("_", " ")}
-                            </span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
+                      {/* COMBOS - Todas las categorías de combos */}
+                      {uniqueComboCategories.length > 0 && (
+                        <div className="py-2">
+                          <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                            Combos
+                          </p>
+                          {uniqueComboCategories.map((category) => {
+                            const Icon = getComboIcon(category);
+                            return (
+                              <Link
+                                key={category}
+                                to={`/carta/combo/${normalizeString(category)}`}
+                                className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
+                              >
+                                <Icon className="w-4 h-4 text-amber-600" />
+                                <span className="capitalize">
+                                  {category.replace("_", " ")}
+                                </span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
 
-                  <div className="h-px bg-gray-100" />
+                      <div className="h-px bg-gray-100" />
 
-                  {/* ÁRMALO - Todos los tipos de producto */}
-                  {tiposProductoUnicos.length > 0 && (
-                    <div className="py-2">
-                      <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                        Ármalo
-                      </p>
-                      {tiposProductoUnicos.map((tipo) => {
-                        const Icon = getProductoIcon(tipo);
-                        return (
-                          <Link
-                            key={tipo}
-                            to={`/menu/productos/tipo/${normalizeString(tipo)}`}
-                            className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
-                          >
-                            <Icon className="w-4 h-4 text-amber-600" />
-                            <span className="capitalize">
-                              {tipo.replace("_", " ")}
-                            </span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
+                      {/* ÁRMALO - Todas las categorías de productos */}
+                      {uniqueProductCategories.length > 0 && (
+                        <div className="py-2">
+                          <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                            Ármalo
+                          </p>
+                          {uniqueProductCategories.map((category) => {
+                            const Icon = getProductIcon(category);
+                            return (
+                              <Link
+                                key={category}
+                                to={`/carta/${normalizeString(category)}`}
+                                className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
+                              >
+                                <Icon className="w-4 h-4 text-amber-600" />
+                                <span className="capitalize">
+                                  {category.replace("_", " ")}
+                                </span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
                 </div>
               )}
             </div>
@@ -323,26 +322,26 @@ function Navbar() {
             {/* Mobile Toggle */}
             <button
               className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-amber-50"
-              onClick={toggleMenu}
+              onClick={toggleNav}
             >
-              {menuOpen ? (
+              {navOpen ? (
                 <X className="w-6 h-6" />
               ) : (
-                <MenuIcon className="w-6 h-6" />
+                <AlignJustify className="w-6 h-6" />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {menuOpen && (
+      {/* Mobile Nav Drawer */}
+      {navOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-gray-100 max-h-[85vh] overflow-y-auto">
           <div className="px-4 py-4 space-y-1">
             {/* Inicio */}
             <Link
               to="/home"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => setNavOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
                 isActive("/home")
                   ? "bg-amber-900 text-white"
@@ -356,35 +355,35 @@ function Navbar() {
             {/* Carta */}
             <div className="space-y-1">
               <Link
-                to="/menu"
-                onClick={() => setMenuOpen(false)}
+                to="/carta"
+                onClick={() => setNavOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
-                  isActive("/menu")
+                  isActive("/carta")
                     ? "bg-amber-900 text-white"
                     : "text-gray-700 hover:bg-amber-50"
                 }`}
               >
-                <ClipboardList className="w-5 h-5" />
+                <UtensilsCrossed className="w-5 h-5" />
                 Ver toda la carta
               </Link>
 
               {/* Combos */}
-              {tiposMenuUnicos.length > 0 && (
+              {uniqueComboCategories.length > 0 && (
                 <div className="ml-4">
                   <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase">
                     Combos
                   </p>
-                  {tiposMenuUnicos.map((tipo) => {
-                    const Icon = getComboIcon(tipo);
+                  {uniqueComboCategories.map((category) => {
+                    const Icon = getComboIcon(category);
                     return (
                       <Link
-                        key={tipo}
-                        to={`/menu/tipo/${normalizeString(tipo)}`}
-                        onClick={() => setMenuOpen(false)}
+                        key={category}
+                        to={`/carta/combo/${normalizeString(category)}`}
+                        onClick={() => setNavOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:text-amber-900 rounded-lg hover:bg-amber-50"
                       >
                         <Icon className="w-4 h-4 text-amber-600" />
-                        {tipo.replace("_", " ")}
+                        {category.replace("_", " ")}
                       </Link>
                     );
                   })}
@@ -392,22 +391,22 @@ function Navbar() {
               )}
 
               {/* Ármalo */}
-              {tiposProductoUnicos.length > 0 && (
+              {uniqueProductCategories.length > 0 && (
                 <div className="ml-4">
                   <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase">
                     Ármalo
                   </p>
-                  {tiposProductoUnicos.map((tipo) => {
-                    const Icon = getProductoIcon(tipo);
+                  {uniqueProductCategories.map((category) => {
+                    const Icon = getProductIcon(category);
                     return (
                       <Link
-                        key={tipo}
-                        to={`/menu/productos/tipo/${normalizeString(tipo)}`}
-                        onClick={() => setMenuOpen(false)}
+                        key={category}
+                        to={`/carta/${normalizeString(category)}`}
+                        onClick={() => setNavOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:text-amber-900 rounded-lg hover:bg-amber-50"
                       >
                         <Icon className="w-4 h-4 text-amber-600" />
-                        {tipo.replace("_", " ")}
+                        {category.replace("_", " ")}
                       </Link>
                     );
                   })}
@@ -426,7 +425,7 @@ function Navbar() {
               <Link
                 key={item.to}
                 to={item.to}
-                onClick={() => setMenuOpen(false)}
+                onClick={() => setNavOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
                   isActive(item.to)
                     ? "bg-amber-900 text-white"
@@ -444,7 +443,7 @@ function Navbar() {
                 <button
                   onClick={() => {
                     handleLogout();
-                    setMenuOpen(false);
+                    setNavOpen(false);
                   }}
                   className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 text-sm font-semibold px-4 py-3 rounded-xl"
                 >
@@ -452,7 +451,7 @@ function Navbar() {
                   Cerrar sesión
                 </button>
               ) : (
-                <Link to="/login" onClick={() => setMenuOpen(false)}>
+                <Link to="/login" onClick={() => setNavOpen(false)}>
                   <button className="w-full flex items-center justify-center gap-2 bg-amber-500 text-white text-sm font-semibold px-4 py-3 rounded-xl">
                     <User className="w-4 h-4" />
                     Iniciar sesión

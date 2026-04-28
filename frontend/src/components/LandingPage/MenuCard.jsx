@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const MenuCard = ({ name, imageUrl, to }) => (
+const CartaCard = ({ name, imageUrl, to }) => (
   <Link
     to={to}
     className="group block rounded-2xl overflow-hidden bg-[#FFFDF9] border border-[#F0E4CC] transition-all duration-300 hover:shadow-xl"
@@ -22,4 +22,5 @@ const MenuCard = ({ name, imageUrl, to }) => (
   </Link>
 );
 
-export default MenuCard;
+export default CartaCard;
+

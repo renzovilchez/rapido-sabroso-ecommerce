@@ -1,4 +1,3 @@
-// CategoriaTiposCarousel.jsx (mejorado)
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, EffectCoverflow } from "swiper/modules";
@@ -20,7 +19,7 @@ function normalizeString(str) {
     .replace(/^-+|-+$/g, "");
 }
 
-// Colores por categoría para el fondo de las cards
+// Category colors for card backgrounds
 const categoryColors = {
   hamburguesas: "from-red-500 to-orange-600",
   bebidas: "from-blue-500 to-cyan-600",
@@ -28,28 +27,28 @@ const categoryColors = {
   postres: "from-pink-500 to-rose-600",
 };
 
-const getCategoryGradient = (nombre) => {
+const getCategoryGradient = (name) => {
   const key = Object.keys(categoryColors).find((k) =>
-    nombre.toLowerCase().includes(k),
+    name.toLowerCase().includes(k),
   );
   return categoryColors[key] || "from-amber-500 to-orange-600";
 };
 
-const CategoriaTiposCarousel = () => {
-  const [categoriasPorTipo, setCategoriasPorTipo] = useState([]);
+const CategoryCarousel = () => {
+  const [categoriesWithTypes, setCategoriesWithTypes] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategoriasPorTipo = async () => {
+    const fetchCategoriesWithTypes = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/categorias/con-tipos/all",
+          "http://localhost:5000/api/categories/with-types/all",
         );
         if (!res.ok) throw new Error("No se pudo obtener las categorías.");
         const data = await res.json();
         if (!Array.isArray(data)) throw new Error("Datos inválidos.");
-        setCategoriasPorTipo(data);
+        setCategoriesWithTypes(data);
       } catch (error) {
         console.error("Error:", error);
         setError("No se pudieron cargar las categorías.");
@@ -57,7 +56,7 @@ const CategoriaTiposCarousel = () => {
         setLoading(false);
       }
     };
-    fetchCategoriasPorTipo();
+    fetchCategoriesWithTypes();
   }, []);
 
   if (loading) {
@@ -104,27 +103,27 @@ const CategoriaTiposCarousel = () => {
         </p>
       </div>
 
-      {categoriasPorTipo.map((categoria) => (
-        <div key={categoria.id_categoria} className="group/section">
+      {categoriesWithTypes.map((category) => (
+        <div key={category.categoryId} className="group/section">
           {/* Header de categoría */}
           <div className="flex items-center justify-between mb-6 px-2">
             <div className="flex items-center gap-3">
               <div
-                className={`w-10 h-10 rounded-xl bg-gradient-to-br ${getCategoryGradient(categoria.nombre)} flex items-center justify-center shadow-lg`}
+                className={`w-10 h-10 rounded-xl bg-gradient-to-br ${getCategoryGradient(category.name)} flex items-center justify-center shadow-lg`}
               >
                 <Flame className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">
-                  {categoria.nombre}
+                  {category.name}
                 </h3>
                 <p className="text-sm text-gray-500">
-                  {categoria.tipos?.length || 0} opciones disponibles
+                  {category.types?.length || 0} opciones disponibles
                 </p>
               </div>
             </div>
             <Link
-              to={`/menu`}
+              to={`/carta`}
               className="hidden sm:flex items-center gap-1 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors group/link"
             >
               Ver todo
@@ -153,10 +152,10 @@ const CategoriaTiposCarousel = () => {
             }}
             className="!pb-4 !px-2"
           >
-            {categoria.tipos.map((tipo) => (
-              <SwiperSlide key={tipo.id_tipo_producto}>
+            {category.types.map((type) => (
+              <SwiperSlide key={type.typeId}>
                 <Link
-                  to={`/menu/productos/tipo/${normalizeString(tipo.nombre)}`}
+                  to={`/carta/${normalizeString(type.name)}`}
                   className="block group/card"
                 >
                   <div className="relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100">
@@ -164,11 +163,11 @@ const CategoriaTiposCarousel = () => {
                     <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                       <img
                         src={
-                          tipo.imagen
-                            ? `http://localhost:5000/images/${tipo.imagen}`
+                          type.image
+                            ? `http://localhost:5000/images/${type.image}`
                             : "https://placehold.co/400x300/e5e7eb/9ca3af?text=Sin+imagen"
                         }
-                        alt={tipo.nombre}
+                        alt={type.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
                         loading="lazy"
                       />
@@ -186,7 +185,7 @@ const CategoriaTiposCarousel = () => {
                     {/* Contenido */}
                     <div className="p-4">
                       <h4 className="text-lg font-bold text-gray-900 group-hover/card:text-amber-600 transition-colors">
-                        {tipo.nombre}
+                        {type.name}
                       </h4>
                       <p className="text-sm text-gray-500 mt-1">
                         Haz clic para ver opciones
@@ -195,7 +194,7 @@ const CategoriaTiposCarousel = () => {
 
                     {/* Barra de color inferior */}
                     <div
-                      className={`h-1 w-full bg-gradient-to-r ${getCategoryGradient(categoria.nombre)} transform scale-x-0 group-hover/card:scale-x-100 transition-transform duration-500 origin-left`}
+                      className={`h-1 w-full bg-gradient-to-r ${getCategoryGradient(category.name)} transform scale-x-0 group-hover/card:scale-x-100 transition-transform duration-500 origin-left`}
                     />
                   </div>
                 </Link>
@@ -208,4 +207,4 @@ const CategoriaTiposCarousel = () => {
   );
 };
 
-export default CategoriaTiposCarousel;
+export default CategoryCarousel;

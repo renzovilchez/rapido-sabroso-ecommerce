@@ -24,16 +24,20 @@ const Footer = () => {
 
   const quickLinks = [
     { to: "/home", label: "Inicio" },
-    { to: "/menu", label: "Nuestra Carta" },
+    { to: "/carta", label: "Nuestra Carta" },
     { to: "/nosotros", label: "Nuestra Historia" },
     { to: "/blog", label: "Blog" },
     { to: "/contacto", label: "Contáctanos" },
     { to: "/historial-pedidos", label: "Mis Pedidos" },
   ];
 
-  const servicios = [
-    { to: "/menu", label: "Hamburguesas a la Carta", icon: UtensilsCrossed },
-    { to: "/menu", label: "Combos Especiales", icon: Star },
+  const services = [
+    {
+      to: "/carta/hamburguesas",
+      label: "Hamburguesas a la Carta",
+      icon: UtensilsCrossed,
+    },
+    { to: "/carta/combo/personal", label: "Combos Especiales", icon: Star },
   ];
 
   const legalLinks = [
@@ -143,14 +147,14 @@ const Footer = () => {
               Lo que Ofrecemos
             </h4>
             <ul className="space-y-2.5">
-              {servicios.map((servicio, idx) => (
+              {services.map((service, idx) => (
                 <li key={idx}>
                   <Link
-                    to={servicio.to}
+                    to={service.to}
                     className="text-sm text-gray-400 hover:text-amber-500 hover:translate-x-1 inline-flex items-center gap-2 transition-all duration-200"
                   >
-                    <servicio.icon className="w-3.5 h-3.5 text-gray-600" />
-                    {servicio.label}
+                    <service.icon className="w-3.5 h-3.5 text-gray-600" />
+                    {service.label}
                   </Link>
                 </li>
               ))}
