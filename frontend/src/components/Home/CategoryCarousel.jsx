@@ -6,18 +6,8 @@ import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
 import { Link } from "react-router-dom";
 import { Flame, ChevronRight, Loader2 } from "lucide-react";
+import { normalizeString } from "../../utils/stringUtils";
 
-function normalizeString(str) {
-  if (typeof str !== "string") return "";
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/--+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 // Category colors for card backgrounds
 const categoryColors = {

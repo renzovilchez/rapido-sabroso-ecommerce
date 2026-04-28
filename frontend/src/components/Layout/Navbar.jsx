@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import { GlobalContext } from "../../context/GlobalContext";
 import logoImage from "../../assets/images/logo.png";
+import { normalizeString } from "../../utils/stringUtils";
 import {
   ShoppingCart,
   User,
@@ -30,18 +31,6 @@ import {
   Droplets,
   Wine,
 } from "lucide-react";
-
-function normalizeString(str) {
-  if (typeof str !== "string") return "";
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/--+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 function Navbar() {
   const [navOpen, setNavOpen] = useState(false);
@@ -89,14 +78,12 @@ function Navbar() {
 
   // Unique combo categories
   const uniqueComboCategories = [
-    ...new Set(combos.map((c) => c.productType).filter(Boolean)),
+    ...new Set(combos.map((c) => c.category).filter(Boolean)),
   ];
 
   // Unique product categories
   const uniqueProductCategories = [
-    ...new Set(
-      products.map((product) => product.productType).filter(Boolean),
-    ),
+    ...new Set(products.map((product) => product.productType).filter(Boolean)),
   ];
 
   // Get icon for combo category
@@ -202,55 +189,55 @@ function Navbar() {
 
                   <div className="h-px bg-gray-100" />
 
-                      {/* COMBOS - Todas las categorías de combos */}
-                      {uniqueComboCategories.length > 0 && (
-                        <div className="py-2">
-                          <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                            Combos
-                          </p>
-                          {uniqueComboCategories.map((category) => {
-                            const Icon = getComboIcon(category);
-                            return (
-                              <Link
-                                key={category}
-                                to={`/carta/combo/${normalizeString(category)}`}
-                                className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
-                              >
-                                <Icon className="w-4 h-4 text-amber-600" />
-                                <span className="capitalize">
-                                  {category.replace("_", " ")}
-                                </span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      )}
+                  {/* COMBOS - Todas las categorías de combos */}
+                  {uniqueComboCategories.length > 0 && (
+                    <div className="py-2">
+                      <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                        Combos
+                      </p>
+                      {uniqueComboCategories.map((category) => {
+                        const Icon = getComboIcon(category);
+                        return (
+                          <Link
+                            key={category}
+                            to={`/carta/combo/${normalizeString(category)}`}
+                            className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
+                          >
+                            <Icon className="w-4 h-4 text-amber-600" />
+                            <span className="capitalize">
+                              {category.replace("_", " ")}
+                            </span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
 
-                      <div className="h-px bg-gray-100" />
+                  <div className="h-px bg-gray-100" />
 
-                      {/* ÁRMALO - Todas las categorías de productos */}
-                      {uniqueProductCategories.length > 0 && (
-                        <div className="py-2">
-                          <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                            Ármalo
-                          </p>
-                          {uniqueProductCategories.map((category) => {
-                            const Icon = getProductIcon(category);
-                            return (
-                              <Link
-                                key={category}
-                                to={`/carta/${normalizeString(category)}`}
-                                className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
-                              >
-                                <Icon className="w-4 h-4 text-amber-600" />
-                                <span className="capitalize">
-                                  {category.replace("_", " ")}
-                                </span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      )}
+                  {/* ÁRMALO - Todas las categorías de productos */}
+                  {uniqueProductCategories.length > 0 && (
+                    <div className="py-2">
+                      <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                        Ármalo
+                      </p>
+                      {uniqueProductCategories.map((category) => {
+                        const Icon = getProductIcon(category);
+                        return (
+                          <Link
+                            key={category}
+                            to={`/carta/${normalizeString(category)}`}
+                            className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-900 transition-colors"
+                          >
+                            <Icon className="w-4 h-4 text-amber-600" />
+                            <span className="capitalize">
+                              {category.replace("_", " ")}
+                            </span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
