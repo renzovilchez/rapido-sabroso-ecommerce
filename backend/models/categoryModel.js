@@ -1,34 +1,42 @@
 import db from './db.js';
 
-const Categoria = {
+const Category = {
   // Obtener todas las categorías
   getAll: async () => {
     const [rows] = await db.execute('SELECT * FROM categoria');
-    return rows;
+    return rows.map(row => ({
+      categoryId: row.id_categoria,
+      name: row.nombre
+    }));
   },
 
   // Obtener una categoría por ID
   getById: async (id) => {
     const [rows] = await db.execute('SELECT * FROM categoria WHERE id_categoria = ?', [id]);
-    return rows[0];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      categoryId: row.id_categoria,
+      name: row.nombre
+    };
   },
 
   // Crear una nueva categoría
-  create: async (nombre) => {
+  create: async (name) => {
     const [result] = await db.execute(
       'INSERT INTO categoria (nombre) VALUES (?)',
-      [nombre]
+      [name]
     );
-    return { id_categoria: result.insertId, nombre };
+    return { categoryId: result.insertId, name };
   },
 
   // Actualizar una categoría
-  update: async (id, nombre) => {
+  update: async (id, name) => {
     const [result] = await db.execute(
       'UPDATE categoria SET nombre = ? WHERE id_categoria = ?',
-      [nombre, id]
+      [name, id]
     );
-    return result.affectedRows > 0 ? { id_categoria: id, nombre } : null;
+    return result.affectedRows > 0 ? { categoryId: id, name } : null;
   },
 
   // Eliminar una categoría
@@ -38,13 +46,13 @@ const Categoria = {
   },
 
   // Obtener categorías con sus tipos de producto
-  getCategoriasConTipos: async () => {
+  getCategoriesWithTypes: async () => {
     const [rows] = await db.query(`
       SELECT 
         c.id_categoria, 
-        c.nombre AS categoria,
+        c.nombre AS categoryName,
         t.id_tipo_producto, 
-        t.nombre AS tipo_producto,
+        t.nombre AS typeName,
         t.imagen
       FROM categoria c
       LEFT JOIN tipo_producto t ON t.id_categoria = c.id_categoria
@@ -52,29 +60,29 @@ const Categoria = {
     `);
 
     // Reorganizar los datos por categoría
-    const categorias = {};
+    const categories = {};
     for (const row of rows) {
-      const { id_categoria, categoria, id_tipo_producto, tipo_producto, imagen } = row;
+      const { id_categoria, categoryName, id_tipo_producto, typeName, imagen } = row;
 
-      if (!categorias[id_categoria]) {
-        categorias[id_categoria] = {
-          id_categoria,
-          nombre: categoria,
-          tipos: []
+      if (!categories[id_categoria]) {
+        categories[id_categoria] = {
+          categoryId: id_categoria,
+          name: categoryName,
+          types: []
         };
       }
 
       if (id_tipo_producto) {
-        categorias[id_categoria].tipos.push({
-          id_tipo_producto,
-          nombre: tipo_producto,
-          imagen
+        categories[id_categoria].types.push({
+          typeId: id_tipo_producto,
+          name: typeName,
+          image: imagen
         });
       }
     }
 
-    return Object.values(categorias);
+    return Object.values(categories);
   }
 };
 
-export default Categoria;
+export default Category;

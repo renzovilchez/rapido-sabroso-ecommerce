@@ -1,10 +1,15 @@
 import db from './db.js';
 
-const TipoProducto = {
+const ProductType = {
   // Obtener todos los tipos
   getAll: async () => {
     const [rows] = await db.execute('SELECT * FROM tipo_producto');
-    return rows;
+    return rows.map(row => ({
+      productTypeId: row.id_tipo_producto,
+      name: row.nombre,
+      image: row.imagen,
+      categoryId: row.id_categoria
+    }));
   },
 
   // Obtener por ID
@@ -13,31 +18,38 @@ const TipoProducto = {
       'SELECT * FROM tipo_producto WHERE id_tipo_producto = ?',
       [id]
     );
-    return rows[0];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      productTypeId: row.id_tipo_producto,
+      name: row.nombre,
+      image: row.imagen,
+      categoryId: row.id_categoria
+    };
   },
 
   // Crear nuevo tipo
-  create: async ({ nombre, imagen, id_categoria }) => {
+  create: async ({ name, image, categoryId }) => {
     const [result] = await db.execute(
       'INSERT INTO tipo_producto (nombre, imagen, id_categoria) VALUES (?, ?, ?)',
-      [nombre, imagen, id_categoria]
+      [name, image, categoryId]
     );
     return {
-      id_tipo_producto: result.insertId,
-      nombre,
-      imagen,
-      id_categoria,
+      productTypeId: result.insertId,
+      name,
+      image,
+      categoryId,
     };
   },
 
   // Actualizar tipo existente
-  update: async (id, { nombre, imagen, id_categoria }) => {
+  update: async (id, { name, image, categoryId }) => {
     const [result] = await db.execute(
       'UPDATE tipo_producto SET nombre = ?, imagen = ?, id_categoria = ? WHERE id_tipo_producto = ?',
-      [nombre, imagen, id_categoria, id]
+      [name, image, categoryId, id]
     );
     return result.affectedRows > 0
-      ? { id_tipo_producto: id, nombre, imagen, id_categoria }
+      ? { productTypeId: id, name, image, categoryId }
       : null;
   },
 
@@ -51,4 +63,4 @@ const TipoProducto = {
   },
 };
 
-export default TipoProducto;
+export default ProductType;

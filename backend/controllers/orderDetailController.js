@@ -1,11 +1,11 @@
-import DetallePedido from '../models/detallePedidoModel.js';
+import OrderDetail from '../models/orderDetailModel.js';
 
-const detallePedidoController = {
+const orderDetailController = {
   // Obtener todos los detalles de pedidos
   getAll: async (req, res) => {
     try {
-      const detalles = await DetallePedido.getAll();
-      res.json(detalles);
+      const details = await OrderDetail.getAll();
+      res.json(details);
     } catch (err) {
       res.status(500).json({ error: 'Error al obtener detalles de pedidos' });
     }
@@ -15,9 +15,9 @@ const detallePedidoController = {
   getById: async (req, res) => {
     try {
       const { id } = req.params;
-      const detalle = await DetallePedido.getById(id);
-      if (detalle) {
-        res.json(detalle);
+      const detail = await OrderDetail.getById(id);
+      if (detail) {
+        res.json(detail);
       } else {
         res.status(404).json({ error: 'Detalle de pedido no encontrado' });
       }
@@ -29,10 +29,10 @@ const detallePedidoController = {
   // Crear un nuevo detalle de pedido
   create: async (req, res) => {
     try {
-      const { idPedido, idProducto, cantidadDetallePedido, precioUnitarioDetallePedido } = req.body;
-      const subtotalDetallePedido = cantidadDetallePedido * precioUnitarioDetallePedido; // Calculamos el subtotal
-      const nuevoDetalle = await DetallePedido.create(idPedido, idProducto, cantidadDetallePedido, precioUnitarioDetallePedido, subtotalDetallePedido);
-      res.status(201).json(nuevoDetalle);
+      const { orderId, productId, quantity, price } = req.body;
+      const subtotal = quantity * price; // Calculamos el subtotal
+      const newDetail = await OrderDetail.create(orderId, productId, quantity, price, subtotal);
+      res.status(201).json(newDetail);
     } catch (err) {
       res.status(500).json({ error: 'Error al crear detalle de pedido' });
     }
@@ -42,11 +42,11 @@ const detallePedidoController = {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { idPedido, idProducto, cantidadDetallePedido, precioUnitarioDetallePedido } = req.body;
-      const subtotalDetallePedido = cantidadDetallePedido * precioUnitarioDetallePedido; // Calculamos el subtotal
-      const actualizado = await DetallePedido.update(id, idPedido, idProducto, cantidadDetallePedido, precioUnitarioDetallePedido, subtotalDetallePedido);
-      if (actualizado) {
-        res.json(actualizado);
+      const { orderId, productId, quantity, price } = req.body;
+      const subtotal = quantity * price; // Calculamos el subtotal
+      const updated = await OrderDetail.update(id, orderId, productId, quantity, price, subtotal);
+      if (updated) {
+        res.json(updated);
       } else {
         res.status(404).json({ error: 'Detalle de pedido no encontrado' });
       }
@@ -59,9 +59,9 @@ const detallePedidoController = {
   delete: async (req, res) => {
     try {
       const { id } = req.params;
-      const eliminado = await DetallePedido.delete(id);
-      if (eliminado) {
-        res.json({ mensaje: 'Detalle de pedido eliminado correctamente' });
+      const deleted = await OrderDetail.delete(id);
+      if (deleted) {
+        res.json({ message: 'Detalle de pedido eliminado correctamente' });
       } else {
         res.status(404).json({ error: 'Detalle de pedido no encontrado' });
       }
@@ -71,4 +71,4 @@ const detallePedidoController = {
   },
 };
 
-export default detallePedidoController;
+export default orderDetailController;

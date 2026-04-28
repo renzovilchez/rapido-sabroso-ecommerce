@@ -1,6 +1,6 @@
 import db from './db.js';
 
-const Comprobante = {
+const Receipt = {
   // Obtener todos los comprobantes con datos del pedido
   getAll: async () => {
     const [rows] = await db.execute(`
@@ -21,11 +21,25 @@ const Comprobante = {
       LEFT JOIN pedido p ON c.id_pedido = p.id_pedido
       ORDER BY c.fecha DESC
     `);
-    return rows;
+    
+    return rows.map(row => ({
+      receiptId: row.id_comprobante,
+      orderId: row.id_pedido,
+      type: row.tipo,
+      series: row.serie,
+      correlative: row.correlativo,
+      dni: row.dni,
+      ruc: row.ruc,
+      businessName: row.razon_social,
+      address: row.direccion,
+      taxAddress: row.direccion_fiscal,
+      date: row.fecha,
+      orderTotal: row.total_pedido
+    }));
   },
 
   // Obtener comprobante por ID de pedido
-  getByPedidoId: async (idPedido) => {
+  getByOrderId: async (orderId) => {
     // Obtener comprobante con datos de cliente y pedido
     const [rows] = await db.execute(`
     SELECT 
@@ -45,19 +59,19 @@ const Comprobante = {
       cl.ruc,
       cl.razon_social,
       cl.direccion_fiscal,
-      cl.direccion AS direccion_cliente
+      cl.direccion AS customer_address
     FROM comprobante c
     JOIN pedido p ON p.id_pedido = c.id_pedido
     JOIN cliente cl ON cl.id_cliente = p.id_cliente
     WHERE c.id_pedido = ?
-  `, [idPedido]);
+  `, [orderId]);
 
     if (rows.length === 0) return null;
 
-    const comprobante = rows[0];
+    const receipt = rows[0];
 
     // Obtener productos individuales
-    const [productos] = await db.execute(`
+    const [products] = await db.execute(`
     SELECT 
       dp.id_detalle_pedido,
       dp.id_producto,
@@ -69,10 +83,10 @@ const Comprobante = {
     FROM detalle_pedido dp
     LEFT JOIN producto pr ON pr.id_producto = dp.id_producto
     WHERE dp.id_pedido = ? AND dp.id_producto IS NOT NULL
-  `, [idPedido]);
+  `, [orderId]);
 
-    // Obtener menús
-    const [menus] = await db.execute(`
+    // Obtener combos
+    const [combos] = await db.execute(`
     SELECT 
       dp.id_detalle_pedido,
       dp.id_menu,
@@ -84,56 +98,56 @@ const Comprobante = {
     FROM detalle_pedido dp
     LEFT JOIN menu m ON m.id_menu = dp.id_menu
     WHERE dp.id_pedido = ? AND dp.id_menu IS NOT NULL
-  `, [idPedido]);
+  `, [orderId]);
 
     // Unificar en un solo array
     const items = [
-      ...productos.map(p => ({
-        tipo: 'producto',
+      ...products.map(p => ({
+        type: 'product',
         id: p.id_producto,
-        nombre: p.nombre,
-        cantidad: p.cantidad,
-        precioUnit: p.precio,
+        name: p.nombre,
+        quantity: p.cantidad,
+        unitPrice: p.precio,
         subtotal: p.subtotal,
-        igv: p.igv
+        tax: p.igv
       })),
-      ...menus.map(m => ({
-        tipo: 'menu',
-        id: m.id_menu,
-        nombre: m.nombre,
-        cantidad: m.cantidad,
-        precioUnit: m.precio,
-        subtotal: m.subtotal,
-        igv: m.igv
+      ...combos.map(c => ({
+        type: 'menu',
+        id: c.id_menu,
+        name: c.nombre,
+        quantity: c.cantidad,
+        unitPrice: c.precio,
+        subtotal: c.subtotal,
+        tax: c.igv
       }))
     ];
 
     // Armar objeto de respuesta completo
     return {
-      idComprobante: comprobante.id_comprobante,
-      tipoComprobante: comprobante.tipo,
-      numeroSerie: `${comprobante.serie}-${comprobante.correlativo.toString().padStart(8, '0')}`,
-      fechaEmision: comprobante.fecha,
-      cliente: {
-        nombre: `${comprobante.nombre} ${comprobante.apellidos}`,
-        tipoDocumento: comprobante.tipo_documento,
-        dni: comprobante.dni,
-        ruc: comprobante.ruc,
-        razonSocial: comprobante.razon_social,
-        direccionFiscal: comprobante.direccion_fiscal || comprobante.direccion_cliente
+      receiptId: receipt.id_comprobante,
+      receiptType: receipt.tipo,
+      receiptNumber: `${receipt.serie}-${receipt.correlativo.toString().padStart(8, '0')}`,
+      issueDate: receipt.fecha,
+      customer: {
+        name: `${receipt.nombre} ${receipt.apellidos}`,
+        documentType: receipt.tipo_documento,
+        dni: receipt.dni,
+        ruc: receipt.ruc,
+        businessName: receipt.razon_social,
+        taxAddress: receipt.direccion_fiscal || receipt.customer_address
       },
-      productos: items,
-      totales: {
-        subtotal: parseFloat(comprobante.subtotal),
-        igv: parseFloat(comprobante.igv),
-        descuento: parseFloat(comprobante.descuento),
-        total: parseFloat(comprobante.total)
+      items,
+      totals: {
+        subtotal: parseFloat(receipt.subtotal),
+        tax: parseFloat(receipt.igv),
+        discount: parseFloat(receipt.descuento),
+        total: parseFloat(receipt.total)
       }
     };
   },
 
   // Obtener comprobantes por ID de cliente
-  getByClienteId: async (idCliente) => {
+  getByCustomerId: async (customerId) => {
     const [rows] = await db.execute(`
       SELECT 
         c.id_comprobante,
@@ -153,64 +167,77 @@ const Comprobante = {
       JOIN cliente cl ON cl.id_cliente = p.id_cliente
       WHERE cl.id_cliente = ?
       ORDER BY c.fecha DESC
-    `, [idCliente]);
+    `, [customerId]);
 
-    return rows;
+    return rows.map(row => ({
+      receiptId: row.id_comprobante,
+      orderId: row.id_pedido,
+      type: row.tipo,
+      series: row.serie,
+      correlative: row.correlativo,
+      dni: row.dni,
+      ruc: row.ruc,
+      businessName: row.razon_social,
+      address: row.direccion,
+      taxAddress: row.direccion_fiscal,
+      date: row.fecha,
+      orderTotal: row.total_pedido
+    }));
   },
 
   // Crear un comprobante nuevo con correlativo automático
   create: async (data) => {
     const {
-      id_pedido,
-      tipo,
-      serie,
-      dni,
-      ruc,
-      razon_social,
-      direccion,
-      direccion_fiscal,
+      orderId,
+      type,
+      series,
+      dni = null,
+      ruc = null,
+      businessName = null,
+      address = null,
+      taxAddress = null,
     } = data;
-
-    // Convertir undefined a null para evitar error en la consulta
-    const dniVal = dni === undefined ? null : dni;
-    const rucVal = ruc === undefined ? null : ruc;
-    const razonSocialVal = razon_social === undefined ? null : razon_social;
-    const direccionVal = direccion === undefined ? null : direccion;
-    const direccionFiscalVal = direccion_fiscal === undefined ? null : direccion_fiscal;
 
     // Obtener último correlativo para el tipo y serie dado
     const [rows] = await db.execute(`
-    SELECT correlativo FROM comprobante
-    WHERE tipo = ? AND serie = ?
-    ORDER BY correlativo DESC
-    LIMIT 1
-  `, [tipo, serie]);
+      SELECT correlativo FROM comprobante
+      WHERE tipo = ? AND serie = ?
+      ORDER BY correlativo DESC
+      LIMIT 1
+    `, [type, series]);
 
     // Calcular nuevo correlativo
-    const nuevoCorrelativo = rows.length === 0 ? 1 : rows[0].correlativo + 1;
+    const newCorrelative = rows.length === 0 ? 1 : rows[0].correlativo + 1;
 
     // Insertar nuevo comprobante con el correlativo calculado
     const [result] = await db.execute(`
-    INSERT INTO comprobante (
-      id_pedido, tipo, serie, correlativo,
-      dni, ruc, razon_social, direccion, direccion_fiscal
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `, [
-      id_pedido,
-      tipo,
-      serie,
-      nuevoCorrelativo,
-      dniVal,
-      rucVal,
-      razonSocialVal,
-      direccionVal,
-      direccionFiscalVal
+      INSERT INTO comprobante (
+        id_pedido, tipo, serie, correlativo,
+        dni, ruc, razon_social, direccion, direccion_fiscal
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      orderId,
+      type,
+      series,
+      newCorrelative,
+      dni,
+      ruc,
+      businessName,
+      address,
+      taxAddress
     ]);
 
     return {
-      id_comprobante: result.insertId,
-      ...data,
-      correlativo: nuevoCorrelativo
+      receiptId: result.insertId,
+      orderId,
+      type,
+      series,
+      correlative: newCorrelative,
+      dni,
+      ruc,
+      businessName,
+      address,
+      taxAddress
     };
   },
 
@@ -218,15 +245,15 @@ const Comprobante = {
   // Actualizar comprobante por ID
   update: async (id, data) => {
     const {
-      id_pedido,
-      tipo,
-      serie,
-      correlativo,
+      orderId,
+      type,
+      series,
+      correlative,
       dni,
       ruc,
-      razon_social,
-      direccion,
-      direccion_fiscal,
+      businessName,
+      address,
+      taxAddress,
     } = data;
 
     const [result] = await db.execute(`
@@ -242,15 +269,15 @@ const Comprobante = {
         direccion_fiscal = ?
       WHERE id_comprobante = ?
     `, [
-      id_pedido,
-      tipo,
-      serie,
-      correlativo,
+      orderId,
+      type,
+      series,
+      correlative,
       dni,
       ruc,
-      razon_social,
-      direccion,
-      direccion_fiscal,
+      businessName,
+      address,
+      taxAddress,
       id
     ]);
 
@@ -264,4 +291,4 @@ const Comprobante = {
   }
 };
 
-export default Comprobante;
+export default Receipt;

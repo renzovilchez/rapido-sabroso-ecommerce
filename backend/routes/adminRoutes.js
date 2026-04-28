@@ -4,7 +4,7 @@ import adminController from '../controllers/adminController.js';
 const router = express.Router();
 
 router.get('/', adminController.getAll);
-router.get('/correo/:correo', adminController.getByCorreo);
+router.get('/email/:email', adminController.getByEmail);
 router.get('/:id', adminController.getById);
 router.post('/', adminController.create);
 router.put('/:id', adminController.update);

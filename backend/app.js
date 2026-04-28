@@ -3,16 +3,16 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import productoRoutes from './routes/productoRoutes.js';
-import productoCategoriaRoutes from './routes/productoCategoriaRoutes.js';
-import tipoProductoRoutes from './routes/tipoProductoRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import productCategoryRoutes from './routes/productCategoryRoutes.js';
+import productTypeRoutes from './routes/productTypeRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
-import categoriaRoutes from './routes/categoriaRoutes.js';
-import clienteRoutes from './routes/clienteRoutes.js';
-import comprobanteRoutes from './routes/comprobanteRoutes.js';
-import detallePedidoRoutes from './routes/detallePedidoRoutes.js';
-import pedidoRoutes from './routes/pedidoRoutes.js';
-import metodoPagoRoutes from './routes/metodoPagoRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import customerRoutes from './routes/customerRoutes.js';
+import receiptRoutes from './routes/receiptRoutes.js';
+import orderDetailRoutes from './routes/orderDetailRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import paymentMethodRoutes from './routes/paymentMethodRoutes.js';
 import menuRoutes from './routes/menuRoutes.js';
 
 import path from 'path';
@@ -25,17 +25,17 @@ app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
-app.use('/api/productos', productoRoutes);
-app.use('/api/producto-categorias', productoCategoriaRoutes);
-app.use('/api/tipos-producto', tipoProductoRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/product-categories', productCategoryRoutes);
+app.use('/api/product-types', productTypeRoutes);
 app.use('/api/admins', adminRoutes);
-app.use('/api/categorias', categoriaRoutes);
-app.use('/api/clientes', clienteRoutes);
-app.use('/api/comprobantes', comprobanteRoutes);
-app.use('/api/detalles-pedido', detallePedidoRoutes);
-app.use('/api/pedidos', pedidoRoutes);
-app.use('/api/metodos-pago', metodoPagoRoutes);
-app.use('/api/menus', menuRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/receipts', receiptRoutes);
+app.use('/api/order-details', orderDetailRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payment-methods', paymentMethodRoutes);
+app.use('/api/combos', menuRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

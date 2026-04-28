@@ -1,19 +1,19 @@
-import Comprobante from '../models/comprobanteModel.js';
+import Receipt from '../models/receiptModel.js';
 
-const comprobanteController = {
+const receiptController = {
   // Obtener todos los comprobantes
   getAll: async (req, res) => {
     try {
-      const comprobantes = await Comprobante.getAll();
-      res.json(comprobantes);
+      const receipts = await Receipt.getAll();
+      res.json(receipts);
     } catch (error) {
       console.error('Error al obtener comprobantes:', error);
       res.status(500).json({ message: 'Error al obtener comprobantes' });
     }
   },
 
-  // Obtener comprobante por ID
-  getByPedidoId: async (req, res) => {
+  // Obtener comprobante por ID de pedido
+  getByOrderId: async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -21,13 +21,13 @@ const comprobanteController = {
         return res.status(400).json({ message: 'ID inválido' });
       }
 
-      const comprobante = await Comprobante.getByPedidoId(id);
+      const receipt = await Receipt.getByOrderId(id);
 
-      if (!comprobante) {
+      if (!receipt) {
         return res.status(404).json({ message: 'Comprobante no encontrado' });
       }
 
-      res.status(200).json(comprobante);
+      res.status(200).json(receipt);
 
     } catch (error) {
       console.error('Error al obtener comprobante por ID:', error);
@@ -36,17 +36,17 @@ const comprobanteController = {
   },
 
   // Obtener comprobantes por ID de cliente
-  getByClienteId: async (req, res) => {
-    const { idCliente } = req.params;
+  getByCustomerId: async (req, res) => {
+    const { customerId } = req.params;
 
     try {
-      if (isNaN(idCliente)) {
+      if (isNaN(customerId)) {
         return res.status(400).json({ message: 'ID de cliente inválido' });
       }
 
-      const comprobantes = await Comprobante.getByClienteId(idCliente);
+      const receipts = await Receipt.getByCustomerId(customerId);
 
-      res.status(200).json(comprobantes);
+      res.status(200).json(receipts);
 
     } catch (error) {
       console.error('Error al obtener comprobantes por cliente:', error);
@@ -58,8 +58,8 @@ const comprobanteController = {
   create: async (req, res) => {
     try {
       const data = req.body;
-      const nuevoComprobante = await Comprobante.create(data);
-      res.status(201).json(nuevoComprobante);
+      const newReceipt = await Receipt.create(data);
+      res.status(201).json(newReceipt);
     } catch (error) {
       console.error('Error al crear comprobante:', error);
       res.status(500).json({ message: 'Error al crear comprobante' });
@@ -71,8 +71,8 @@ const comprobanteController = {
     try {
       const id = req.params.id;
       const data = req.body;
-      const actualizado = await Comprobante.update(id, data);
-      if (!actualizado) {
+      const updated = await Receipt.update(id, data);
+      if (!updated) {
         return res.status(404).json({ message: 'Comprobante no encontrado para actualizar' });
       }
       res.json({ message: 'Comprobante actualizado correctamente' });
@@ -86,8 +86,8 @@ const comprobanteController = {
   delete: async (req, res) => {
     try {
       const id = req.params.id;
-      const eliminado = await Comprobante.delete(id);
-      if (!eliminado) {
+      const deleted = await Receipt.delete(id);
+      if (!deleted) {
         return res.status(404).json({ message: 'Comprobante no encontrado para eliminar' });
       }
       res.json({ message: 'Comprobante eliminado correctamente' });
@@ -98,4 +98,4 @@ const comprobanteController = {
   }
 };
 
-export default comprobanteController;
+export default receiptController;

@@ -1,51 +1,51 @@
-import menu from '../models/menuModel.js';
+import Menu from '../models/menuModel.js';
 
 const menuController = {
-  // GET /menus
+  // GET /api/combos
   async getAll(req, res) {
     try {
-      const menus = await menu.getAll();
-      res.json(menus);
+      const items = await Menu.getAll();
+      res.json(items);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener los menús' });
+      res.status(500).json({ error: 'Error al obtener los combos' });
     }
   },
 
-  // POST /menus
+  // POST /api/combos
   async create(req, res) {
     try {
-      const nuevoMenu = await menu.create(req.body);
-      res.status(201).json(nuevoMenu);
+      const newItem = await Menu.create(req.body);
+      res.status(201).json(newItem);
     } catch (error) {
-      res.status(500).json({ error: 'Error al crear el menú' });
+      res.status(500).json({ error: 'Error al crear el combo' });
     }
   },
 
-  // PUT /menus/:id
+  // PUT /api/combos/:id
   async update(req, res) {
     try {
-      const updated = await menu.update(req.params.id, req.body);
+      const updated = await Menu.update(req.params.id, req.body);
       if (updated) {
-        res.json({ mensaje: 'Menú actualizado correctamente' });
+        res.json({ message: 'Combo actualizado correctamente' });
       } else {
-        res.status(404).json({ error: 'Menú no encontrado' });
+        res.status(404).json({ error: 'Combo no encontrado' });
       }
     } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar el menú' });
+      res.status(500).json({ error: 'Error al actualizar el combo' });
     }
   },
 
-  // DELETE /menus/:id
+  // DELETE /api/combos/:id
   async delete(req, res) {
     try {
-      const deleted = await menu.delete(req.params.id);
+      const deleted = await Menu.delete(req.params.id);
       if (deleted) {
-        res.json({ mensaje: 'Menú eliminado correctamente' });
+        res.json({ message: 'Combo eliminado correctamente' });
       } else {
-        res.status(404).json({ error: 'Menú no encontrado' });
+        res.status(404).json({ error: 'Combo no encontrado' });
       }
     } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar el menú' });
+      res.status(500).json({ error: 'Error al eliminar el combo' });
     }
   }
 };

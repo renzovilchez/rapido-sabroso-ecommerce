@@ -25,29 +25,44 @@ const adminController = {
     }
   },
 
-  getByCorreo: async (req, res) => {
+  getByEmail: async (req, res) => {
     try {
-      const { correo } = req.params;
-      const adminEncontrado = await Admin.getByCorreo(correo);
-      adminEncontrado
-        ? res.json(adminEncontrado)
-        : res.status(404).json({ error: 'Administrador no encontrado' });
+      const { email } = req.params;
+      const adminFound = await Admin.getByEmail(email);
+      if (adminFound) {
+        const { password: _, ...safeData } = adminFound;
+        res.json({
+          adminId: safeData.idAdmin,
+          name: safeData.nombre,
+          email: safeData.correo
+        });
+      } else {
+        res.status(404).json({ error: 'Administrador no encontrado' });
+      }
     } catch (err) {
       res.status(500).json({ error: 'Error al buscar administrador por correo' });
     }
   },
 
-    login: async (req, res) => {
+  login: async (req, res) => {
     try {
-      const { correo, password } = req.body;
-      const admin = await Admin.getByCorreo(correo);
+      const { email, password } = req.body;
+      const admin = await Admin.getByEmail(email);
       if (!admin) return res.status(401).json({ success: false, message: 'Correo no encontrado' });
 
       const match = await bcrypt.compare(password, admin.password);
       if (!match) return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
 
-      delete admin.password;
-      res.status(200).json({ success: true, message: 'Login exitoso', admin });
+      const { password: _, ...safeData } = admin;
+      res.status(200).json({ 
+        success: true, 
+        message: 'Login exitoso', 
+        admin: {
+          adminId: safeData.idAdmin,
+          name: safeData.nombre,
+          email: safeData.correo
+        }
+      });
     } catch (err) {
       res.status(500).json({ error: 'Error al intentar iniciar sesión' });
     }
@@ -55,9 +70,13 @@ const adminController = {
 
   create: async (req, res) => {
     try {
-      const { nombre, correo, password } = req.body;
-      const nuevoAdmin = await Admin.create(nombre, correo, password);
-      res.status(201).json(nuevoAdmin);
+      const { name, email, password } = req.body;
+      // Hashear la contraseña antes de pasarla al modelo
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      
+      const newAdmin = await Admin.create(name, email, hashedPassword);
+      res.status(201).json(newAdmin);
     } catch (err) {
       res.status(500).json({ error: 'Error al crear administrador' });
     }
@@ -66,10 +85,17 @@ const adminController = {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nombre, correo, password } = req.body;
-      const actualizado = await Admin.update(id, nombre, correo, password);
-      if (actualizado) {
-        res.json(actualizado);
+      const { name, email, password } = req.body;
+      
+      let finalPassword = password;
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        finalPassword = await bcrypt.hash(password, salt);
+      }
+
+      const updated = await Admin.update(id, name, email, finalPassword);
+      if (updated) {
+        res.json(updated);
       } else {
         res.status(404).json({ error: 'Administrador no encontrado' });
       }
@@ -81,9 +107,9 @@ const adminController = {
   delete: async (req, res) => {
     try {
       const { id } = req.params;
-      const eliminado = await Admin.delete(id);
-      if (eliminado) {
-        res.json({ mensaje: 'Administrador eliminado correctamente' });
+      const deleted = await Admin.delete(id);
+      if (deleted) {
+        res.json({ message: 'Administrador eliminado correctamente' });
       } else {
         res.status(404).json({ error: 'Administrador no encontrado' });
       }

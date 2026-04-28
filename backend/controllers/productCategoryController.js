@@ -1,11 +1,11 @@
-import ProductoCategoria from '../models/productocategoriaModel.js';
+import ProductCategory from '../models/productCategoryModel.js';
 
-const productoCategoriaController = {
+const productCategoryController = {
   // Obtener todas las relaciones entre productos y categorías
   getAll: async (req, res) => {
     try {
-      const relaciones = await ProductoCategoria.getAll();
-      res.json(relaciones);
+      const relations = await ProductCategory.getAll();
+      res.json(relations);
     } catch (err) {
       res.status(500).json({ error: 'Error al obtener relaciones producto-categoría' });
     }
@@ -15,9 +15,9 @@ const productoCategoriaController = {
   getById: async (req, res) => {
     try {
       const { id } = req.params;
-      const relacion = await ProductoCategoria.getById(id);
-      if (relacion) {
-        res.json(relacion);
+      const relation = await ProductCategory.getById(id);
+      if (relation) {
+        res.json(relation);
       } else {
         res.status(404).json({ error: 'Relación producto-categoría no encontrada' });
       }
@@ -26,11 +26,11 @@ const productoCategoriaController = {
     }
   },
 
-  // Obtener categorías agrupadas por tipo sin agrupar los datos
-  getCategoriasPorTipo: async (req, res) => {
+  // Obtener categorías agrupadas por tipo
+  getCategoriesByType: async (req, res) => {
     try {
-      const categoriasPorTipo = await ProductoCategoria.getCategoriasPorTipo();
-      res.json(categoriasPorTipo);
+      const categoriesByType = await ProductCategory.getCategoriesByType();
+      res.json(categoriesByType);
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener categorías por tipo' });
     }
@@ -39,9 +39,9 @@ const productoCategoriaController = {
   // Crear una nueva relación entre producto y categoría
   create: async (req, res) => {
     try {
-      const { idProducto, idCategoria } = req.body;
-      const nuevaRelacion = await ProductoCategoria.create(idProducto, idCategoria);
-      res.status(201).json(nuevaRelacion);
+      const { productId, categoryId } = req.body;
+      const newRelation = await ProductCategory.create(productId, categoryId);
+      res.status(201).json(newRelation);
     } catch {
       res.status(500).json({ error: 'Error al crear relación producto-categoría' });
     }
@@ -50,10 +50,10 @@ const productoCategoriaController = {
   // Eliminar una relación entre producto y categoría
   delete: async (req, res) => {
     try {
-      const { idProducto, idCategoria } = req.params;
-      const eliminado = await ProductoCategoria.delete(idProducto, idCategoria);
-      if (eliminado) {
-        res.json({ mensaje: 'Relación producto-categoría eliminada correctamente' });
+      const { productId, categoryId } = req.params;
+      const deleted = await ProductCategory.delete(productId, categoryId);
+      if (deleted) {
+        res.json({ message: 'Relación producto-categoría eliminada correctamente' });
       } else {
         res.status(404).json({ error: 'Relación producto-categoría no encontrada' });
       }
@@ -63,4 +63,4 @@ const productoCategoriaController = {
   },
 };
 
-export default productoCategoriaController;
+export default productCategoryController;

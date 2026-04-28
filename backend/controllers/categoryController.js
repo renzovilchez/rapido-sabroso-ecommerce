@@ -1,11 +1,11 @@
-import Categoria from '../models/categoriaModel.js';
+import Category from '../models/categoryModel.js';
 
-const categoriaController = {
+const categoryController = {
   // Obtener todas las categorías
   getAll: async (req, res) => {
     try {
-      const categorias = await Categoria.getAll();
-      res.json(categorias);
+      const categories = await Category.getAll();
+      res.json(categories);
     } catch (err) {
       res.status(500).json({ error: 'Error al obtener categorías', detalle: err.message });
     }
@@ -15,9 +15,9 @@ const categoriaController = {
   getById: async (req, res) => {
     try {
       const { id } = req.params;
-      const categoria = await Categoria.getById(id);
-      if (categoria) {
-        res.json(categoria);
+      const category = await Category.getById(id);
+      if (category) {
+        res.json(category);
       } else {
         res.status(404).json({ error: 'Categoría no encontrada' });
       }
@@ -29,9 +29,9 @@ const categoriaController = {
   // Crear nueva categoría
   create: async (req, res) => {
     try {
-      const { nombre } = req.body;
-      const nueva = await Categoria.create(nombre);
-      res.status(201).json(nueva);
+      const { name } = req.body;
+      const newCategory = await Category.create(name);
+      res.status(201).json(newCategory);
     } catch (err) {
       res.status(500).json({ error: 'Error al crear categoría', detalle: err.message });
     }
@@ -41,10 +41,10 @@ const categoriaController = {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nombre } = req.body;
-      const actualizada = await Categoria.update(id, nombre);
-      if (actualizada) {
-        res.json(actualizada);
+      const { name } = req.body;
+      const updated = await Category.update(id, name);
+      if (updated) {
+        res.json(updated);
       } else {
         res.status(404).json({ error: 'Categoría no encontrada' });
       }
@@ -57,9 +57,9 @@ const categoriaController = {
   delete: async (req, res) => {
     try {
       const { id } = req.params;
-      const eliminada = await Categoria.delete(id);
-      if (eliminada) {
-        res.json({ mensaje: 'Categoría eliminada correctamente' });
+      const deleted = await Category.delete(id);
+      if (deleted) {
+        res.json({ message: 'Categoría eliminada correctamente' });
       } else {
         res.status(404).json({ error: 'Categoría no encontrada' });
       }
@@ -69,14 +69,14 @@ const categoriaController = {
   },
 
   // Obtener categorías con tipos
-  getConTipos: async (req, res) => {
+  getWithTypes: async (req, res) => {
     try {
-      const resultado = await Categoria.getCategoriasConTipos();
-      res.json(resultado);
+      const result = await Category.getCategoriesWithTypes();
+      res.json(result);
     } catch (err) {
       res.status(500).json({ error: 'Error al obtener categorías con tipos', detalle: err.message });
     }
   }
 };
 
-export default categoriaController;
+export default categoryController;

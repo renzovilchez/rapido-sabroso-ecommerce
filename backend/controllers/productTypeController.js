@@ -1,10 +1,10 @@
-import TipoProducto from '../models/tipoProductoModel.js';
+import ProductType from '../models/productTypeModel.js';
 
-const tipoProductoController = {
+const productTypeController = {
   getAll: async (req, res) => {
     try {
-      const tipos = await TipoProducto.getAll();
-      res.json(tipos);
+      const types = await ProductType.getAll();
+      res.json(types);
     } catch (err) {
       res.status(500).json({ error: 'Error al obtener tipos de producto' });
     }
@@ -13,9 +13,9 @@ const tipoProductoController = {
   getById: async (req, res) => {
     try {
       const { id } = req.params;
-      const tipo = await TipoProducto.getById(id);
-      if (tipo) {
-        res.json(tipo);
+      const type = await ProductType.getById(id);
+      if (type) {
+        res.json(type);
       } else {
         res.status(404).json({ error: 'Tipo de producto no encontrado' });
       }
@@ -26,9 +26,9 @@ const tipoProductoController = {
 
   create: async (req, res) => {
     try {
-      const { nombre, imagen, id_categoria } = req.body;
-      const nuevo = await TipoProducto.create({ nombre, imagen, id_categoria });
-      res.status(201).json(nuevo);
+      const { name, image, categoryId } = req.body;
+      const newType = await ProductType.create({ name, image, categoryId });
+      res.status(201).json(newType);
     } catch (err) {
       res.status(500).json({ error: 'Error al crear el tipo de producto' });
     }
@@ -37,10 +37,10 @@ const tipoProductoController = {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nombre, imagen, id_categoria } = req.body;
-      const actualizado = await TipoProducto.update(id, { nombre, imagen, id_categoria });
-      if (actualizado) {
-        res.json(actualizado);
+      const { name, image, categoryId } = req.body;
+      const updated = await ProductType.update(id, { name, image, categoryId });
+      if (updated) {
+        res.json(updated);
       } else {
         res.status(404).json({ error: 'Tipo de producto no encontrado' });
       }
@@ -52,9 +52,9 @@ const tipoProductoController = {
   delete: async (req, res) => {
     try {
       const { id } = req.params;
-      const eliminado = await TipoProducto.delete(id);
-      if (eliminado) {
-        res.json({ mensaje: 'Tipo de producto eliminado correctamente' });
+      const deleted = await ProductType.delete(id);
+      if (deleted) {
+        res.json({ message: 'Tipo de producto eliminado correctamente' });
       } else {
         res.status(404).json({ error: 'Tipo de producto no encontrado' });
       }
@@ -64,4 +64,4 @@ const tipoProductoController = {
   },
 };
 
-export default tipoProductoController;
+export default productTypeController;

@@ -1,12 +1,12 @@
-import MetodoPago from '../models/metodoPagoModel.js';
+import PaymentMethod from '../models/paymentMethodModel.js';
 
-const metodoPagoController = {
+const paymentMethodController = {
   // Obtener todos los métodos de pago (opcionalmente por cliente)
   getAll: async (req, res) => {
     try {
-      const { idCliente } = req.query; // opcional para filtrar por cliente
-      const metodos = await MetodoPago.getAll(idCliente);
-      res.json(metodos);
+      const { customerId } = req.query; // optional to filter by customer
+      const methods = await PaymentMethod.getAll(customerId);
+      res.json(methods);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Error al obtener métodos de pago' });
@@ -17,9 +17,9 @@ const metodoPagoController = {
   getById: async (req, res) => {
     try {
       const { id } = req.params;
-      const metodo = await MetodoPago.getById(id);
-      if (metodo) {
-        res.json(metodo);
+      const method = await PaymentMethod.getById(id);
+      if (method) {
+        res.json(method);
       } else {
         res.status(404).json({ error: 'Método de pago no encontrado' });
       }
@@ -32,13 +32,13 @@ const metodoPagoController = {
   // Crear un nuevo método de pago
   create: async (req, res) => {
     try {
-      const { id_cliente, nombre, numero } = req.body;
-      if (!id_cliente || !nombre || !numero) {
+      const { customerId, name, number } = req.body;
+      if (!customerId || !name || !number) {
         return res.status(400).json({ error: 'Faltan datos obligatorios' });
       }
 
-      const nuevoMetodo = await MetodoPago.create({ id_cliente, nombre, numero });
-      res.status(201).json(nuevoMetodo);
+      const newMethod = await PaymentMethod.create({ customerId, name, number });
+      res.status(201).json(newMethod);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Error al crear método de pago' });
@@ -49,15 +49,15 @@ const metodoPagoController = {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { id_cliente, nombre, numero } = req.body;
+      const { customerId, name, number } = req.body;
 
-      if (!id_cliente || !nombre || !numero) {
+      if (!customerId || !name || !number) {
         return res.status(400).json({ error: 'Faltan datos obligatorios' });
       }
 
-      const actualizado = await MetodoPago.update(id, { id_cliente, nombre, numero });
-      if (actualizado) {
-        res.json(actualizado);
+      const updated = await PaymentMethod.update(id, { customerId, name, number });
+      if (updated) {
+        res.json(updated);
       } else {
         res.status(404).json({ error: 'Método de pago no encontrado' });
       }
@@ -71,9 +71,9 @@ const metodoPagoController = {
   delete: async (req, res) => {
     try {
       const { id } = req.params;
-      const eliminado = await MetodoPago.delete(id);
-      if (eliminado) {
-        res.json({ mensaje: 'Método de pago eliminado correctamente' });
+      const deleted = await PaymentMethod.delete(id);
+      if (deleted) {
+        res.json({ message: 'Método de pago eliminado correctamente' });
       } else {
         res.status(404).json({ error: 'Método de pago no encontrado' });
       }
@@ -84,4 +84,4 @@ const metodoPagoController = {
   },
 };
 
-export default metodoPagoController;
+export default paymentMethodController;

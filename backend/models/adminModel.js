@@ -4,44 +4,58 @@ import bcrypt from 'bcrypt';
 const Admin = {
   getAll: async () => {
     const [rows] = await db.execute('SELECT * FROM admin');
-    return rows;
+    return rows.map(row => ({
+      adminId: row.idAdmin,
+      name: row.nombre,
+      email: row.correo
+    }));
   },
 
   getById: async (id) => {
     const [rows] = await db.execute('SELECT * FROM admin WHERE idAdmin = ?', [id]);
-    return rows[0];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      adminId: row.idAdmin,
+      name: row.nombre,
+      email: row.correo
+    };
   },
 
   login: async (email, password) => {
-    const admin = await Admin.getByCorreo(email);
+    const admin = await Admin.getByEmail(email);
     if (!admin) return null;
 
     const match = await bcrypt.compare(password, admin.password);
     if (!match) return null;
 
     const { password: _, ...safeData } = admin;
-    return safeData;
+    return {
+      adminId: safeData.idAdmin,
+      name: safeData.nombre,
+      email: safeData.correo
+    };
   },
 
-  getByCorreo: async (email) => {
-    const [rows] = await db.execute('SELECT * FROM admin WHERE email = ?', [email]);
-    return rows[0];
+  getByEmail: async (email) => {
+    const [rows] = await db.execute('SELECT * FROM admin WHERE correo = ?', [email]);
+    return rows[0]; // Returns raw data for internal use (login)
   },
 
-  create: async (nombre, correo, password) => {
+  create: async (name, email, password) => {
     const [result] = await db.execute(
       'INSERT INTO admin (nombre, correo, password) VALUES (?, ?, ?)',
-      [nombre, correo, password]
+      [name, email, password]
     );
-    return { idAdmin: result.insertId, nombre, correo };
+    return { adminId: result.insertId, name, email };
   },
 
-  update: async (id, nombre, correo, password) => {
+  update: async (id, name, email, password) => {
     const [result] = await db.execute(
       'UPDATE admin SET nombre = ?, correo = ?, password = ? WHERE idAdmin = ?',
-      [nombre, correo, password, id]
+      [name, email, password, id]
     );
-    return result.affectedRows > 0 ? { idAdmin: id, nombre, correo } : null;
+    return result.affectedRows > 0 ? { adminId: id, name, email } : null;
   },
 
   delete: async (id) => {

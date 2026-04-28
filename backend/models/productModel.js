@@ -1,6 +1,6 @@
 import db from './db.js';
 
-const Producto = {
+const Product = {
   getAll: async () => {
     const [rows] = await db.execute(`
       SELECT 
@@ -10,13 +10,23 @@ const Producto = {
         p.precio, 
         p.stock, 
         p.imagen,
-        tp.nombre AS tipoProducto, 
-        c.nombre AS categoriaProducto
+        tp.nombre AS productType, 
+        c.nombre AS productCategory
       FROM producto p
       JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo_producto
       LEFT JOIN categoria c ON tp.id_categoria = c.id_categoria;
     `);
-    return rows;
+    
+    return rows.map(row => ({
+      productId: row.id_producto,
+      name: row.nombre,
+      description: row.descripcion,
+      price: row.precio,
+      stock: row.stock,
+      image: row.imagen,
+      productType: row.productType,
+      productCategory: row.productCategory
+    }));
   },
 
   getById: async (id) => {
@@ -28,48 +38,61 @@ const Producto = {
         p.precio, 
         p.stock, 
         p.imagen,
-        tp.nombre AS tipoProducto, 
-        c.nombre AS categoriaProducto
+        tp.nombre AS productType, 
+        c.nombre AS productCategory
       FROM producto p
       JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo_producto
       LEFT JOIN categoria c ON tp.id_categoria = c.id_categoria
       WHERE p.id_producto = ?
     `, [id]);
-    return rows[0];
-  },
 
-  create: async (nombre, descripcion, precio, imagen, stock, id_tipo_producto) => {
-    const [result] = await db.execute(`
-      INSERT INTO producto (nombre, descripcion, precio, imagen, stock, id_tipo_producto)
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [nombre, descripcion, precio, imagen, stock, id_tipo_producto]
-    );
+    if (rows.length === 0) return null;
+    
+    const row = rows[0];
     return {
-      id_producto: result.insertId,
-      nombre,
-      descripcion,
-      precio,
-      imagen,
-      stock,
-      id_tipo_producto
+      productId: row.id_producto,
+      name: row.nombre,
+      description: row.descripcion,
+      price: row.precio,
+      stock: row.stock,
+      image: row.image,
+      productType: row.productType,
+      productCategory: row.productCategory
     };
   },
 
-  update: async (id, nombre, descripcion, precio, imagen, stock, id_tipo_producto) => {
+  create: async (name, description, price, image, stock, productTypeId) => {
+    const [result] = await db.execute(`
+      INSERT INTO producto (nombre, descripcion, precio, imagen, stock, id_tipo_producto)
+      VALUES (?, ?, ?, ?, ?, ?)`,
+      [name, description, price, image, stock, productTypeId]
+    );
+    return {
+      productId: result.insertId,
+      name,
+      description,
+      price,
+      image,
+      stock,
+      productTypeId
+    };
+  },
+
+  update: async (id, name, description, price, image, stock, productTypeId) => {
     const [result] = await db.execute(`
       UPDATE producto 
       SET nombre = ?, descripcion = ?, precio = ?, imagen = ?, stock = ?, id_tipo_producto = ?
       WHERE id_producto = ?`,
-      [nombre, descripcion, precio, imagen, stock, id_tipo_producto, id]
+      [name, description, price, image, stock, productTypeId, id]
     );
     return result.affectedRows > 0 ? {
-      id_producto: id,
-      nombre,
-      descripcion,
-      precio,
-      imagen,
+      productId: id,
+      name,
+      description,
+      price,
+      image,
       stock,
-      id_tipo_producto
+      productTypeId
     } : null;
   },
 
@@ -79,4 +102,4 @@ const Producto = {
   },
 };
 
-export default Producto;
+export default Product;

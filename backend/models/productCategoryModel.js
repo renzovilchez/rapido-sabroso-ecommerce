@@ -1,43 +1,54 @@
 import db from './db.js';
 
-const ProductoCategoria = {
+const ProductCategory = {
   // Obtener todas las relaciones entre productos y categorías con nombres
   getAll: async () => {
     const [rows] = await db.execute(`
       SELECT 
         pc.idProducto, 
-        p.nombreProducto AS nombreProducto, 
-        c.nombreCategoria AS nombreCategoria
+        p.nombreProducto AS productName, 
+        c.nombreCategoria AS categoryName
       FROM producto_categoria pc
       JOIN producto p ON pc.idProducto = p.idProducto
       JOIN categoria c ON pc.idCategoria = c.idCategoria
     `);
-    return rows;
+    
+    return rows.map(row => ({
+      productId: row.idProducto,
+      productName: row.productName,
+      categoryName: row.categoryName
+    }));
   },
 
-  // Obtener una relación entre producto y categoría (opcional, si vas a usar claves compuestas, puedes omitir esto)
-  getById: async (idProducto, idCategoria) => {
+  // Obtener una relación entre producto y categoría
+  getById: async (productId, categoryId) => {
     const [rows] = await db.execute(
       `SELECT 
         pc.idProducto, 
-        p.nombreProducto AS nombreProducto,
-        c.nombreCategoria AS nombreCategoria
+        p.nombreProducto AS productName,
+        c.nombreCategoria AS categoryName
       FROM producto_categoria pc
       JOIN producto p ON pc.idProducto = p.idProducto
       JOIN categoria c ON pc.idCategoria = c.idCategoria
       WHERE pc.idProducto = ? AND pc.idCategoria = ?`,
-      [idProducto, idCategoria]
+      [productId, categoryId]
     );
-    return rows[0];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      productId: row.idProducto,
+      productName: row.productName,
+      categoryName: row.categoryName
+    };
   },
 
-  getCategoriasPorTipo: async () => {
+  getCategoriesByType: async () => {
     try {
       const [rows] = await db.execute(`
         SELECT 
-          tp.nombreTipoProducto AS tipoProducto, 
-          c.nombreCategoria AS nombreCategoria,
-          c.imagenCategoria
+          tp.nombreTipoProducto AS productTypeName, 
+          c.nombreCategoria AS categoryName,
+          c.imagenCategoria AS categoryImage
         FROM producto_categoria pc
         JOIN producto p ON pc.idProducto = p.idProducto
         JOIN tipo_producto tp ON p.idTipoProducto = tp.idTipoProducto
@@ -46,30 +57,30 @@ const ProductoCategoria = {
       `);
   
       // Agrupar manualmente
-      const agrupado = {};
+      const grouped = {};
   
       rows.forEach(row => {
-        const tipo = row.tipoProducto;
-        const categoria = row.nombreCategoria;
-        const imagen = row.imagenCategoria;
+        const type = row.productTypeName;
+        const category = row.categoryName;
+        const image = row.categoryImage;
   
-        if (!agrupado[tipo]) {
-          agrupado[tipo] = [];
+        if (!grouped[type]) {
+          grouped[type] = [];
         }
   
         // Verificar si la categoría ya existe para no duplicarla
-        if (!agrupado[tipo].some(c => c.nombreCategoria === categoria)) {
-          agrupado[tipo].push({ nombreCategoria: categoria, imagenCategoria: imagen });
+        if (!grouped[type].some(c => c.categoryName === category)) {
+          grouped[type].push({ categoryName: category, categoryImage: image });
         }
       });
   
       // Convertir a formato de array
-      const resultado = Object.entries(agrupado).map(([tipoProducto, categorias]) => ({
-        tipoProducto,
-        categorias
+      const result = Object.entries(grouped).map(([productType, categories]) => ({
+        productType,
+        categories
       }));
   
-      return resultado;
+      return result;
     } catch (error) {
       console.error('Error al obtener categorías por tipo:', error);
       throw error;
@@ -77,25 +88,25 @@ const ProductoCategoria = {
   },  
 
   // Crear una nueva relación entre producto y categoría
-  create: async (idProducto, idCategoria) => {
+  create: async (productId, categoryId) => {
     const [result] = await db.execute(
       'INSERT INTO producto_categoria (idProducto, idCategoria) VALUES (?, ?)',
-      [idProducto, idCategoria]
+      [productId, categoryId]
     );
     return {
-      idProducto,
-      idCategoria
+      productId,
+      categoryId
     };
   },
 
   // Eliminar una relación entre producto y categoría
-  delete: async (idProducto, idCategoria) => {
+  delete: async (productId, categoryId) => {
     const [result] = await db.execute(
       'DELETE FROM producto_categoria WHERE idProducto = ? AND idCategoria = ?',
-      [idProducto, idCategoria]
+      [productId, categoryId]
     );
     return result.affectedRows > 0;
   },
 };
 
-export default ProductoCategoria;
+export default ProductCategory;

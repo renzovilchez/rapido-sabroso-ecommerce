@@ -1,18 +1,23 @@
 import db from './db.js';
 
-const MetodoPago = {
+const PaymentMethod = {
   // Obtener todos los métodos de pago (opcionalmente filtrar por cliente)
-  getAll: async (idCliente = null) => {
+  getAll: async (customerId = null) => {
     let query = `SELECT id_metodo_pago, id_cliente, nombre, numero FROM metodo_pago`;
     let params = [];
 
-    if (idCliente) {
+    if (customerId) {
       query += ` WHERE id_cliente = ?`;
-      params.push(idCliente);
+      params.push(customerId);
     }
 
     const [rows] = await db.execute(query, params);
-    return rows;
+    return rows.map(row => ({
+      paymentMethodId: row.id_metodo_pago,
+      customerId: row.id_cliente,
+      name: row.nombre,
+      number: row.numero
+    }));
   },
 
   // Obtener método de pago por ID
@@ -21,26 +26,43 @@ const MetodoPago = {
       `SELECT id_metodo_pago, id_cliente, nombre, numero FROM metodo_pago WHERE id_metodo_pago = ?`,
       [id]
     );
-    return rows[0];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      paymentMethodId: row.id_metodo_pago,
+      customerId: row.id_cliente,
+      name: row.nombre,
+      number: row.numero
+    };
   },
 
   // Crear un nuevo método de pago
-  create: async ({ id_cliente, nombre, numero }) => {
+  create: async ({ customerId, name, number }) => {
     const [result] = await db.execute(
       `INSERT INTO metodo_pago (id_cliente, nombre, numero) VALUES (?, ?, ?)`,
-      [id_cliente, nombre, numero]
+      [customerId, name, number]
     );
-    return { id_metodo_pago: result.insertId, id_cliente, nombre, numero };
+    return { 
+      paymentMethodId: result.insertId, 
+      customerId, 
+      name, 
+      number 
+    };
   },
 
   // Actualizar un método de pago por ID
-  update: async (id, { id_cliente, nombre, numero }) => {
+  update: async (id, { customerId, name, number }) => {
     const [result] = await db.execute(
       `UPDATE metodo_pago SET id_cliente = ?, nombre = ?, numero = ? WHERE id_metodo_pago = ?`,
-      [id_cliente, nombre, numero, id]
+      [customerId, name, number, id]
     );
     if (result.affectedRows === 0) return null;
-    return { id_metodo_pago: id, id_cliente, nombre, numero };
+    return { 
+      paymentMethodId: id, 
+      customerId, 
+      name, 
+      number 
+    };
   },
 
   // Eliminar un método de pago por ID
@@ -53,4 +75,4 @@ const MetodoPago = {
   }
 };
 
-export default MetodoPago;
+export default PaymentMethod;
