@@ -59,10 +59,13 @@ function Home() {
               Desde 2021 en Trujillo
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-black text-white leading-tight">
-              Hamburguesas que{" "}
+            <h1 className="text-5xl md:text-7xl font-black text-white leading-[1.1]">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
-                enamoran
+                Rápido
+              </span>
+              <span className="text-white"> y </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
+                Sabroso
               </span>
             </h1>
 
