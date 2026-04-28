@@ -27,7 +27,7 @@ const Login = () => {
     try {
       const { correo, password } = formData;
 
-      const response = await axios.post('http://localhost:5000/api/clientes/login', formData);
+      const response = await axios.post('http://localhost:5000/api/customers/login', formData);
 
       if (response.data.success) {
         console.log('Login exitoso:', response.data.cliente);

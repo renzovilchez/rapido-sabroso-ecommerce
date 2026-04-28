@@ -12,8 +12,8 @@ function TiposProductos() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const TIPOS_URL = 'http://localhost:5000/api/tipos-producto';
-  const CATS_URL = 'http://localhost:5000/api/categorias';
+  const TIPOS_URL = 'http://localhost:5000/api/product-types';
+  const CATS_URL = 'http://localhost:5000/api/categories';
 
   // Carga inicial de tipos y categorías
   const fetchData = async () => {

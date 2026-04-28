@@ -93,11 +93,11 @@ export default function LandingPage() {
                   Hacer un pedido
                 </Button>
                 <Button
-                  to="/menu"
+                  to="/carta"
                   variant="secondary"
                   className="w-full sm:w-auto"
                 >
-                  Ver menú
+                  Ver carta
                 </Button>
               </div>
 
@@ -193,14 +193,14 @@ export default function LandingPage() {
                 key={i}
                 name={item.name}
                 imageUrl={`http://localhost:5000/images/hamburguesa${item.image}.jpg`}
-                to="/menu/productos/tipo/hamburguesas-clasicas"
+                to="/carta/hamburguesas-clasicas"
               />
             ))}
           </div>
 
           <div className="text-center">
-            <Button to="/menu" variant="cta" className="px-8 py-4 text-base">
-              Ver todo el menú →
+            <Button to="/carta" variant="cta" className="px-8 py-4 text-base">
+              Ver toda la carta →
             </Button>
           </div>
         </div>
@@ -234,10 +234,10 @@ export default function LandingPage() {
                   Empezar ahora
                 </Button>
                 <Link
-                  to="/menu"
+                  to="/carta"
                   className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium text-[#F0E4CC] hover:text-[#F5A623] transition-colors duration-200"
                 >
-                  Ver el menú primero →
+                  Ver la carta primero →
                 </Link>
               </div>
 

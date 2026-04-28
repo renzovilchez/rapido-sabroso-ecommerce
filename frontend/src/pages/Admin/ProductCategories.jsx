@@ -7,7 +7,7 @@ function CategoriasProductos() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = 'http://localhost:5000/api/categorias';
+  const API_BASE = 'http://localhost:5000/api/categories';
 
   // Obtener categorías
   const fetchCategorias = async () => {

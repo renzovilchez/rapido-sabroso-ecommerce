@@ -268,13 +268,13 @@
   box-shadow: var(--shadow-lg);
 }
 
-.menu-card-hover {
+.carta-card-hover {
   transition:
     transform var(--transition),
     box-shadow var(--transition);
 }
 
-.menu-card-hover:hover {
+.carta-card-hover:hover {
   transform: scale(1.03);
   box-shadow: var(--shadow-xl);
 }

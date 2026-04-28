@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -7,8 +7,8 @@ function Pedidos() {
   const [message, setMessage] = useState(null);
   const [detalleVisible, setDetalleVisible] = useState(null);
 
-  const API_PEDIDOS = 'http://localhost:5000/api/pedidos';
-  const API_DETALLES = 'http://localhost:5000/api/detalles-pedido';
+  const API_PEDIDOS = "http://localhost:5000/api/orders";
+  const API_DETALLES = "http://localhost:5000/api/order-details";
 
   // Obtener pedidos
   const fetchPedidos = async () => {
@@ -18,7 +18,7 @@ function Pedidos() {
       const data = await res.json();
       setPedidos(Array.isArray(data) ? data : [data]); // Aseguramos array
     } catch (err) {
-      setMessage({ type: 'error', text: 'Error al cargar pedidos' });
+      setMessage({ type: "error", text: "Error al cargar pedidos" });
     } finally {
       setLoading(false);
     }
@@ -34,7 +34,10 @@ function Pedidos() {
         : [];
       setDetalles((prev) => ({ ...prev, [id_pedido]: filtrados }));
     } catch (err) {
-      setMessage({ type: 'error', text: 'Error al cargar detalles del pedido' });
+      setMessage({
+        type: "error",
+        text: "Error al cargar detalles del pedido",
+      });
     }
   };
 
@@ -60,7 +63,9 @@ function Pedidos() {
       {message && (
         <div
           className={`mb-4 p-3 rounded ${
-            message.type === 'error' ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'
+            message.type === "error"
+              ? "bg-red-200 text-red-800"
+              : "bg-green-200 text-green-800"
           }`}
         >
           {message.text}
@@ -92,15 +97,21 @@ function Pedidos() {
                     <td className="px-4 py-2 text-center">
                       {new Date(p.fecha).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-2 text-center">S/ {parseFloat(p.total).toFixed(2)}</td>
+                    <td className="px-4 py-2 text-center">
+                      S/ {parseFloat(p.total).toFixed(2)}
+                    </td>
                     <td className="px-4 py-2 text-sm">{p.direccion_entrega}</td>
-                    <td className="px-4 py-2 text-center">{p.metodo_pago || '—'}</td>
+                    <td className="px-4 py-2 text-center">
+                      {p.metodo_pago || "—"}
+                    </td>
                     <td className="px-4 py-2 text-center">
                       <button
                         onClick={() => toggleDetalles(p.id_pedido)}
                         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
                       >
-                        {detalleVisible === p.id_pedido ? 'Ocultar' : 'Ver Detalles'}
+                        {detalleVisible === p.id_pedido
+                          ? "Ocultar"
+                          : "Ver Detalles"}
                       </button>
                     </td>
                   </tr>
@@ -109,15 +120,21 @@ function Pedidos() {
                   {detalleVisible === p.id_pedido && detalles[p.id_pedido] && (
                     <tr>
                       <td colSpan="6" className="bg-white px-6 py-4">
-                        <h3 className="font-semibold text-lg mb-2">Detalles del Pedido</h3>
+                        <h3 className="font-semibold text-lg mb-2">
+                          Detalles del Pedido
+                        </h3>
                         {detalles[p.id_pedido].length === 0 ? (
-                          <p className="text-gray-600">Sin detalles disponibles.</p>
+                          <p className="text-gray-600">
+                            Sin detalles disponibles.
+                          </p>
                         ) : (
                           <table className="w-full border text-sm">
                             <thead>
                               <tr className="bg-gray-200">
                                 <th className="border px-2 py-1">#</th>
-                                <th className="border px-2 py-1">Producto/Menu ID</th>
+                                <th className="border px-2 py-1">
+                                  Producto/Carta ID
+                                </th>
                                 <th className="border px-2 py-1">Cantidad</th>
                                 <th className="border px-2 py-1">Precio</th>
                                 <th className="border px-2 py-1">Subtotal</th>
@@ -127,14 +144,24 @@ function Pedidos() {
                             <tbody>
                               {detalles[p.id_pedido].map((d, i) => (
                                 <tr key={d.id_detalle_pedido}>
-                                  <td className="border px-2 py-1 text-center">{i + 1}</td>
                                   <td className="border px-2 py-1 text-center">
-                                    {d.id_producto ?? d.id_menu}
+                                    {i + 1}
                                   </td>
-                                  <td className="border px-2 py-1 text-center">{d.cantidad}</td>
-                                  <td className="border px-2 py-1 text-center">S/ {d.precio}</td>
-                                  <td className="border px-2 py-1 text-center">S/ {d.subtotal}</td>
-                                  <td className="border px-2 py-1 text-center">S/ {d.igv}</td>
+                                  <td className="border px-2 py-1 text-center">
+                                    {d.id_producto ?? d.id_carta}
+                                  </td>
+                                  <td className="border px-2 py-1 text-center">
+                                    {d.cantidad}
+                                  </td>
+                                  <td className="border px-2 py-1 text-center">
+                                    S/ {d.precio}
+                                  </td>
+                                  <td className="border px-2 py-1 text-center">
+                                    S/ {d.subtotal}
+                                  </td>
+                                  <td className="border px-2 py-1 text-center">
+                                    S/ {d.igv}
+                                  </td>
                                 </tr>
                               ))}
                             </tbody>
@@ -154,3 +181,4 @@ function Pedidos() {
 }
 
 export default Pedidos;
+

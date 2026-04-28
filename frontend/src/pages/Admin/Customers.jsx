@@ -15,7 +15,7 @@ function Clientes() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = 'http://localhost:5000/api/clientes';
+  const API_URL = 'http://localhost:5000/api/customers';
 
   const fetchClientes = async () => {
     setLoading(true);

@@ -2,62 +2,61 @@ import { Routes, Route } from "react-router-dom";
 
 // Layouts
 import Layout from "./layouts/Layout";
-// import LayoutNavideno from "../layouts/LayoutNavideno";
 import AdminLayout from "./layouts/AdminLayout";
 
 // Landing Pages
 import LandingPage from "./pages/LandingPage/LandingPage";
 
-// Páginas Admin
+// Admin Pages
 import Dashboard from "./pages/Admin/Dashboard";
-import Productos from "./pages/Admin/Productos";
-import CategoriasProductos from "./pages/Admin/CategoriasProductos";
-import TiposProductos from "./pages/Admin/TiposProductos";
-import Pedidos from "./pages/Admin/Pedidos";
-import Clientes from "./pages/Admin/Clientes";
-import Admins from "./pages/Admin/Administradores";
-import Reportes from "./pages/Admin/Reportes";
-import Ajustes from "./pages/Admin/Ajustes";
+import Products from "./pages/Admin/Products";
+import ProductCategories from "./pages/Admin/ProductCategories";
+import ProductTypes from "./pages/Admin/ProductTypes";
+import Orders from "./pages/Admin/Orders";
+import Customers from "./pages/Admin/Customers";
+import Admins from "./pages/Admin/Admins";
+import Reports from "./pages/Admin/Reports";
+import Settings from "./pages/Admin/Settings";
 import LoginAdmin from "./pages/Admin/LoginAdmin";
 
-// Páginas Cliente
+// Customer Pages
 import Home from "./pages/Home";
 // Blog
-import Blog from "./pages/Blog/Index";
-import BlogHistoria from "./pages/Blog/BlogHistoria";
-import BlogAcompanamientos from "./pages/Blog/BlogAcompanamientos";
-import BlogBeneficios from "./pages/Blog/BlogBeneficios";
-import BlogCuriosidades from "./pages/Blog/BlogCuriosidades";
-import BlogNovedades from "./pages/Blog/BlogNovedades";
+import Blog from "./pages/Blog/index";
+import BlogHistory from "./pages/Blog/BlogHistory";
+import BlogSides from "./pages/Blog/BlogSides";
+import BlogBenefits from "./pages/Blog/BlogBenefits";
+import BlogCuriosities from "./pages/Blog/BlogCuriosities";
+import BlogNews from "./pages/Blog/BlogNews";
 // Vlog
 import Vlog from "./pages/Vlog";
-// Contacto
-import Contacto from "./pages/Contacto";
-// Comprobante
-import Comprobante from "./pages/Comprobante";
-// Nosotros
-import Nosotros from "./pages/Nosotros/Index";
-import NosotrosMision from "./pages/Nosotros/NosotrosMision";
-import NosotrosVision from "./pages/Nosotros/NosotrosVision";
-import NosotrosObjetivos from "./pages/Nosotros/NosotrosObjetivos";
-import NosotrosValores from "./pages/Nosotros/NosotrosValores";
-// Ayuda
-import Ayuda from "./pages/Ayuda/index";
-import AyudaManual from "./pages/Ayuda/AyudaManual";
-import AyudaOpinion from "./pages/Ayuda/AyudaOpinion";
-import AyudaPreguntas from "./pages/Ayuda/AyudaPreguntas";
-// Carrito
-import Carrito from "./pages/Carrito";
-// Otros
-import Otros from "./pages/Otros/Index";
-import OtrosFactura from "./pages/Otros/OtrosFactura";
-import OtrosBoleta from "./pages/Otros/OtrosBoleta";
-import OtrosHojasMembretadas from "./pages/Otros/OtrosHojasMembretadas";
-import OtrosVideos from "./pages/Otros/OtrosVideos";
-import OtrosTarjetas from "./pages/Otros/OtrosTarjetas";
-import OtrosLogos from "./pages/Otros/OtrosLogos";
-// Pago
-import Pago from "./pages/Pago";
+// Contact
+import Contact from "./pages/Contact";
+// Receipt
+import Receipt from "./pages/Receipt";
+// About Us
+import AboutUs from "./pages/AboutUs/index";
+import Mission from "./pages/AboutUs/Mission";
+import Vision from "./pages/AboutUs/Vision";
+import Objectives from "./pages/AboutUs/Objectives";
+import Values from "./pages/AboutUs/Values";
+// Help
+import Help from "./pages/Help/index";
+import UserManual from "./pages/Help/UserManual";
+import GiveOpinion from "./pages/Help/GiveOpinion";
+import Faq from "./pages/Help/Faq";
+// Cart
+import Cart from "./pages/Cart";
+// Others
+import Others from "./pages/Others/index";
+import ReceiptFactura from "./pages/Others/ReceiptFactura";
+import ReceiptBoleta from "./pages/Others/ReceiptBoleta";
+import Letterheads from "./pages/Others/Letterheads";
+import Videos from "./pages/Others/Videos";
+import Cards from "./pages/Others/Cards";
+import Logos from "./pages/Others/Logos";
+// Payment
+import Payment from "./pages/Payment";
 // Login
 import Login from "./pages/Login";
 // Register
@@ -65,94 +64,95 @@ import Register from "./pages/Register";
 // NotFound
 import NotFound from "./pages/NotFound";
 // Menu
-import Menu from "./pages/Menu/index";
-import MenuProductos from "./pages/Menu/TipoProducto";
-import TipoMenu from "./pages/Menu/TipoMenu";
-import ProductosProductos from "./pages/Menu/Productos";
-// Historial Pedido
-import HistorialPedido from "./pages/HistorialPedidos";
-// Despedida
-import Despedida from "./pages/Despedida";
+import MenuIndex from "./pages/Menu/MenuIndex";
+import CategoryDetail from "./pages/Menu/CategoryDetail";
+import ComboCategory from "./pages/Menu/ComboCategory";
+import ProductList from "./pages/Menu/ProductList";
+// Order History
+import OrderHistory from "./pages/OrderHistory";
+// Farewell
+import Farewell from "./pages/Farewell";
 
 export function Router() {
   return (
     <Routes>
-      {/* Landing fuera del layout */}
+      {/* Landing outside layout */}
       <Route path="/" element={<LandingPage />} />
 
-      {/* Rutas con Layout Admin*/}
+      {/* Admin Routes with AdminLayout */}
       <Route path="/admin/" element={<LoginAdmin />} />
       <Route element={<AdminLayout />}>
         <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/productos" element={<Productos />} />
+        <Route path="/admin/productos" element={<Products />} />
         <Route
           path="/admin/categoriasProductos"
-          element={<CategoriasProductos />}
+          element={<ProductCategories />}
         />
-        <Route path="/admin/tiposProductos" element={<TiposProductos />} />
-        <Route path="/admin/pedidos" element={<Pedidos />} />
-        <Route path="/admin/clientes" element={<Clientes />} />
+        <Route path="/admin/tiposProductos" element={<ProductTypes />} />
+        <Route path="/admin/pedidos" element={<Orders />} />
+        <Route path="/admin/clientes" element={<Customers />} />
         <Route path="/admin/Admins" element={<Admins />} />
-        <Route path="/admin/reportes" element={<Reportes />} />
-        <Route path="/admin/ajustes" element={<Ajustes />} />
+        <Route path="/admin/reportes" element={<Reports />} />
+        <Route path="/admin/ajustes" element={<Settings />} />
         <Route path="/admin/*" element={<NotFound />} />
       </Route>
-      {/* Rutas con Layout Cliente */}
+
+      {/* Customer Routes with Layout */}
       <Route element={<Layout />}>
         <Route path="/home" element={<Home />} />
 
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/menu/productos/tipo/:tipo" element={<MenuProductos />} />
-        <Route path="menu/tipo/:tipo" element={<TipoMenu />} />
-        <Route path="/productos" element={<ProductosProductos />} />
+        <Route path="/carta" element={<MenuIndex />} />
+        <Route path="/carta/combo/:tipo" element={<ComboCategory />} />
+        <Route path="/carta/:tipo" element={<CategoryDetail />} />
+        <Route path="/carta/producto/:slug" element={<ProductList />} />
 
         <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/historia" element={<BlogHistoria />} />
-        <Route path="/blog/acompanamientos" element={<BlogAcompanamientos />} />
-        <Route path="/blog/beneficios" element={<BlogBeneficios />} />
-        <Route path="/blog/curiosidades" element={<BlogCuriosidades />} />
-        <Route path="/blog/novedades" element={<BlogNovedades />} />
+        <Route path="/blog/historia" element={<BlogHistory />} />
+        <Route path="/blog/acompanamientos" element={<BlogSides />} />
+        <Route path="/blog/beneficios" element={<BlogBenefits />} />
+        <Route path="/blog/curiosidades" element={<BlogCuriosities />} />
+        <Route path="/blog/novedades" element={<BlogNews />} />
 
         <Route path="/vlog" element={<Vlog />} />
 
-        <Route path="/contacto" element={<Contacto />} />
+        <Route path="/contacto" element={<Contact />} />
 
-        <Route path="/nosotros/" element={<Nosotros />} />
-        <Route path="/nosotros/mision" element={<NosotrosMision />} />
-        <Route path="/nosotros/vision" element={<NosotrosVision />} />
-        <Route path="/nosotros/objetivos" element={<NosotrosObjetivos />} />
-        <Route path="/nosotros/valores" element={<NosotrosValores />} />
+        <Route path="/nosotros/" element={<AboutUs />} />
+        <Route path="/nosotros/mision" element={<Mission />} />
+        <Route path="/nosotros/vision" element={<Vision />} />
+        <Route path="/nosotros/objetivos" element={<Objectives />} />
+        <Route path="/nosotros/valores" element={<Values />} />
 
-        <Route path="/ayuda/" element={<Ayuda />} />
-        <Route path="/ayuda/manual-usuario" element={<AyudaManual />} />
-        <Route path="/ayuda/danos-tu-opinion" element={<AyudaOpinion />} />
+        <Route path="/ayuda/" element={<Help />} />
+        <Route path="/ayuda/manual-usuario" element={<UserManual />} />
+        <Route path="/ayuda/danos-tu-opinion" element={<GiveOpinion />} />
         <Route
           path="/ayuda/preguntas-frecuentes"
-          element={<AyudaPreguntas />}
+          element={<Faq />}
         />
 
-        <Route path="/carrito" element={<Carrito />} />
+        <Route path="/carrito" element={<Cart />} />
 
-        <Route path="/historial-pedidos" element={<HistorialPedido />} />
+        <Route path="/historial-pedidos" element={<OrderHistory />} />
 
-        <Route path="/otros" element={<Otros />} />
-        <Route path="/otros/factura" element={<OtrosFactura />} />
-        <Route path="/otros/boleta" element={<OtrosBoleta />} />
+        <Route path="/otros" element={<Others />} />
+        <Route path="/otros/factura" element={<ReceiptFactura />} />
+        <Route path="/otros/boleta" element={<ReceiptBoleta />} />
         <Route
           path="/otros/hojas-membretadas"
-          element={<OtrosHojasMembretadas />}
+          element={<Letterheads />}
         />
-        <Route path="/otros/videos" element={<OtrosVideos />} />
-        <Route path="/otros/tarjetas" element={<OtrosTarjetas />} />
-        <Route path="/otros/logos" element={<OtrosLogos />} />
+        <Route path="/otros/videos" element={<Videos />} />
+        <Route path="/otros/tarjetas" element={<Cards />} />
+        <Route path="/otros/logos" element={<Logos />} />
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        <Route path="/pago" element={<Pago />} />
-        <Route path="/comprobante/:idPedido" element={<Comprobante />} />
+        <Route path="/pago" element={<Payment />} />
+        <Route path="/comprobante/:idPedido" element={<Receipt />} />
 
-        <Route path="/despedida" element={<Despedida />} />
+        <Route path="/despedida" element={<Farewell />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

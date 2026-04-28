@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
-import ComprobantePDF from "../components/ComprobantePDF";
+import ComprobantePDF from "../components/ReceiptPDF";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
 const Comprobante = () => {
@@ -27,12 +27,16 @@ const Comprobante = () => {
   if (loading) return <p>Cargando comprobante...</p>;
   if (!comprobante) return <p>No se encontró el comprobante.</p>;
 
-  return(
+  return (
     <div className="p-6 max-w-5xl mx-auto bg-white rounded shadow space-y-6">
-      <h1 className="text-2xl font-bold">Comprobante: {comprobante.numeroSerie}</h1>
+      <h1 className="text-2xl font-bold">
+        Comprobante: {comprobante.numeroSerie}
+      </h1>
 
       {/* Vista previa del PDF */}
-      <PDFViewer style={{ width: "100%", height: "600px", borderRadius: "8px" }}>
+      <PDFViewer
+        style={{ width: "100%", height: "600px", borderRadius: "8px" }}
+      >
         <ComprobantePDF comprobante={comprobante} />
       </PDFViewer>
 

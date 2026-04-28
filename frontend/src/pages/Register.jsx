@@ -53,7 +53,7 @@ const Register = () => {
 
 
     try {
-      const response = await axios.post('http://localhost:5000/api/clientes/registro', datosFinales);
+      const response = await axios.post('http://localhost:5000/api/customers/register', datosFinales);
       navigate('/login');
     } catch (error) {
       const respuesta = error.response?.data;

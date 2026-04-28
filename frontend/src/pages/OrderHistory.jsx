@@ -11,7 +11,7 @@ const HistorialPedido = () => {
   useEffect(() => {
     const fetchHistorial = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/comprobantes/cliente/${cliente.id_cliente}`);
+        const response = await fetch(`http://localhost:5000/api/receipts/customer/${cliente.id_cliente}`);
         const data = await response.json();
         setComprobantes(data);
       } catch (error) {

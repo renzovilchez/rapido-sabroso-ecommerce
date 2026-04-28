@@ -19,9 +19,9 @@ function Productos() {
         tipoProductoId: '',
     });
 
-    const API_PRODUCTOS = 'http://localhost:5000/api/productos';
-    const API_TIPOS = 'http://localhost:5000/api/tipos-producto';
-    const API_CATEGORIAS = 'http://localhost:5000/api/categorias';
+    const API_PRODUCTOS = 'http://localhost:5000/api/products';
+    const API_TIPOS = 'http://localhost:5000/api/product-types';
+    const API_CATEGORIAS = 'http://localhost:5000/api/categories';
 
     // Cargar productos
     const fetchProductos = async () => {

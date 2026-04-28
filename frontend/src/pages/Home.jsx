@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import CategoriaTypesCarousel from "../components/Home/CategoriesTypesCarousel";
+import CategoryCarousel from "../components/Home/CategoryCarousel";
 import LoopHamburguesa from "../assets/videos/LoopHamburguesa.mp4";
 import {
   Flame,
@@ -73,7 +73,7 @@ function Home() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <a
-                href="/menu"
+                href="/carta"
                 className="group relative px-8 py-4 bg-amber-500 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/25"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -134,7 +134,7 @@ function Home() {
 
         {/* Carousel de categorías */}
         <section>
-          <CategoriaTypesCarousel />
+          <CategoryCarousel />
         </section>
       </div>
     </div>

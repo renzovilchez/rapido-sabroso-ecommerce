@@ -1,9 +1,7 @@
-import OtrosVideos from '../Otros/OtrosVideos'
+import OtrosVideos from "../Others/Videos";
 
 function Vlog() {
-    return (
-            <OtrosVideos/>
-    )
+  return <OtrosVideos />;
 }
 
-export default Vlog
+export default Vlog;
