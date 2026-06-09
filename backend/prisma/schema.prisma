@@ -8,9 +8,10 @@ datasource db {
 }
 
 model Admin {
-  adminId  Int    @id @default(autoincrement()) @map("idAdmin")
+  adminId  Int    @id @default(autoincrement()) @map("id_admin")
   name     String @map("nombre")
-  email    String @unique @map("correo")
+  lastName String @map("apellidos")
+  email    String @unique @map("email")
   password String @map("password")
 
   @@map("admin")
