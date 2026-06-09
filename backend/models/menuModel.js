@@ -1,86 +1,69 @@
-import db from './db.js';
+import prisma from '../prisma/client.js';
 
 const Menu = {
-    // Obtener todos los combos con sus productos
-    async getAll() {
-        const [rows] = await db.execute(`
-      SELECT 
-        m.id_menu,
-        m.nombre,
-        m.descripcion,
-        m.imagen,
-        m.precio,
-        m.tipo_menu,
-        mp.id_producto, 
-        mp.cantidad,
-        p.nombre AS product_name,
-        p.descripcion AS product_description,
-        p.imagen AS product_image,
-        p.precio AS product_price,
-        tp.nombre AS product_type,
-        c.nombre AS category
-        FROM menu m
-        LEFT JOIN menu_producto mp ON m.id_menu = mp.id_menu
-        LEFT JOIN producto p ON mp.id_producto = p.id_producto
-        LEFT JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo_producto
-        LEFT JOIN categoria c ON tp.id_categoria = c.id_categoria;
-    `);
+  async getAll() {
+    const menus = await prisma.menu.findMany({
+      include: {
+        menuProducts: {
+          include: {
+            product: {
+              include: {
+                productType: {
+                  include: { category: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
 
-        // Agrupar productos por combo
-        const bundles = {};
-        for (const row of rows) {
-            const id = row.id_menu;
-            if (!bundles[id]) {
-                bundles[id] = {
-                    menuId: row.id_menu,
-                    name: row.nombre,
-                    description: row.descripcion,
-                    image: row.imagen,
-                    price: row.precio,
-                    category: row.tipo_menu,
-                    products: [],
-                };
-            }
+    return menus.map(m => ({
+      menuId: m.menuId,
+      name: m.name,
+      description: m.description,
+      image: m.image,
+      price: m.price,
+      category: m.category,
+      products: m.menuProducts.map(mp => ({
+        productId: mp.productId,
+        name: mp.product.name,
+        description: mp.product.description,
+        image: mp.product.image,
+        price: mp.product.price,
+        type: mp.product.productType?.name || null,
+        quantity: mp.quantity,
+      })),
+    }));
+  },
 
-            if (row.id_producto) {
-                bundles[id].products.push({
-                    productId: row.id_producto,
-                    name: row.product_name,
-                    description: row.product_description,
-                    image: row.product_image,
-                    price: row.product_price,
-                    type: row.product_type,
-                    quantity: row.cantidad,
-                });
-            }
-        }
+  async create({ name, description, image, price, category }) {
+    const menu = await prisma.menu.create({
+      data: { name, description, image, price, category },
+    });
+    return { id: menu.menuId };
+  },
 
-        return Object.values(bundles);
-    },
+  async update(id, { name, description, image, price, category }) {
+    try {
+      await prisma.menu.update({
+        where: { menuId: id },
+        data: { name, description, image, price, category },
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  },
 
-    // Crear un nuevo combo
-    async create({ name, description, image, price, category }) {
-        const [result] = await db.execute(
-            'INSERT INTO menu (nombre, descripcion, imagen, precio, tipo_menu) VALUES (?, ?, ?, ?, ?)',
-            [name, description, image, price, category]
-        );
-        return { id: result.insertId };
-    },
-
-    // Actualizar un combo existente
-    async update(id, { name, description, image, price, category }) {
-        const [result] = await db.execute(
-            'UPDATE menu SET nombre = ?, descripcion = ?, imagen = ?, precio = ?, tipo_menu = ? WHERE id_menu = ?',
-            [name, description, image, price, category, id]
-        );
-        return result.affectedRows > 0;
-    },
-
-    // Eliminar un combo
-    async delete(id) {
-        const [result] = await db.execute('DELETE FROM menu WHERE id_menu = ?', [id]);
-        return result.affectedRows > 0;
-    },
+  async delete(id) {
+    try {
+      await prisma.menu.delete({ where: { menuId: id } });
+      return true;
+    } catch {
+      return false;
+    }
+  },
 };
 
 export default Menu;

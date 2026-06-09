@@ -1,78 +1,40 @@
-import db from './db.js';
+import prisma from '../prisma/client.js';
 
 const PaymentMethod = {
-  // Obtener todos los métodos de pago (opcionalmente filtrar por cliente)
   getAll: async (customerId = null) => {
-    let query = `SELECT id_metodo_pago, id_cliente, nombre, numero FROM metodo_pago`;
-    let params = [];
-
-    if (customerId) {
-      query += ` WHERE id_cliente = ?`;
-      params.push(customerId);
-    }
-
-    const [rows] = await db.execute(query, params);
-    return rows.map(row => ({
-      paymentMethodId: row.id_metodo_pago,
-      customerId: row.id_cliente,
-      name: row.nombre,
-      number: row.numero
-    }));
+    const where = customerId ? { customerId } : {};
+    return prisma.paymentMethod.findMany({ where });
   },
 
-  // Obtener método de pago por ID
   getById: async (id) => {
-    const [rows] = await db.execute(
-      `SELECT id_metodo_pago, id_cliente, nombre, numero FROM metodo_pago WHERE id_metodo_pago = ?`,
-      [id]
-    );
-    if (rows.length === 0) return null;
-    const row = rows[0];
-    return {
-      paymentMethodId: row.id_metodo_pago,
-      customerId: row.id_cliente,
-      name: row.nombre,
-      number: row.numero
-    };
+    return prisma.paymentMethod.findUnique({ where: { paymentMethodId: id } });
   },
 
-  // Crear un nuevo método de pago
   create: async ({ customerId, name, number }) => {
-    const [result] = await db.execute(
-      `INSERT INTO metodo_pago (id_cliente, nombre, numero) VALUES (?, ?, ?)`,
-      [customerId, name, number]
-    );
-    return { 
-      paymentMethodId: result.insertId, 
-      customerId, 
-      name, 
-      number 
-    };
+    return prisma.paymentMethod.create({
+      data: { customerId, name, number },
+    });
   },
 
-  // Actualizar un método de pago por ID
   update: async (id, { customerId, name, number }) => {
-    const [result] = await db.execute(
-      `UPDATE metodo_pago SET id_cliente = ?, nombre = ?, numero = ? WHERE id_metodo_pago = ?`,
-      [customerId, name, number, id]
-    );
-    if (result.affectedRows === 0) return null;
-    return { 
-      paymentMethodId: id, 
-      customerId, 
-      name, 
-      number 
-    };
+    try {
+      return await prisma.paymentMethod.update({
+        where: { paymentMethodId: id },
+        data: { customerId, name, number },
+      });
+    } catch {
+      return null;
+    }
   },
 
-  // Eliminar un método de pago por ID
   delete: async (id) => {
-    const [result] = await db.execute(
-      `DELETE FROM metodo_pago WHERE id_metodo_pago = ?`,
-      [id]
-    );
-    return result.affectedRows > 0;
-  }
+    try {
+      await prisma.paymentMethod.delete({ where: { paymentMethodId: id } });
+      return true;
+    } catch {
+      return false;
+    }
+  },
 };
 
 export default PaymentMethod;

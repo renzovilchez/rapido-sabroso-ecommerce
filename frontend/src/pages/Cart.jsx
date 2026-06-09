@@ -1,93 +1,20 @@
-import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { GlobalContext } from "../context/GlobalContext";
+import useCartStore from "../store/cartStore";
+import useAuthStore from "../store/authStore";
 
 function Cart() {
   const navigate = useNavigate();
-  const { setCartItemCount, isLoggedIn } = useContext(GlobalContext);
-
-  const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
-
-  // Load cart from localStorage
-  useEffect(() => {
-    const savedData = localStorage.getItem("carrito");
-    if (savedData) {
-      try {
-        const parsedCart = JSON.parse(savedData);
-        if (Array.isArray(parsedCart)) {
-          const normalizedCart = parsedCart.map((item) => ({
-            ...item,
-            price: Number(item.price),
-            quantity: Number(item.quantity),
-          }));
-          setCart(normalizedCart);
-        }
-      } catch (error) {
-        console.error("Error al leer el carrito desde localStorage:", error);
-      }
-    }
-  }, []);
-
-  // Update localStorage and total when cart changes
-  useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("carrito", JSON.stringify(cart));
-    } else {
-      localStorage.removeItem("carrito");
-    }
-
-    const calculatedTotal = cart.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0,
-    );
-    setTotal(calculatedTotal);
-
-    const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
-    setCartItemCount(totalQuantity);
-  }, [cart, setCartItemCount]);
-
-  const increaseQuantity = (itemId, type = 'product') => {
-    setCart((prev) =>
-      prev.map((item) => {
-        const isSameItem = type === 'product' 
-          ? item.productId === itemId 
-          : item.menuId === itemId;
-        
-        return isSameItem
-          ? { ...item, quantity: item.quantity + 1 }
-          : item;
-      }),
-    );
-  };
-
-  const decreaseQuantity = (itemId, type = 'product') => {
-    setCart((prev) =>
-      prev.map((item) => {
-        const isSameItem = type === 'product' 
-          ? item.productId === itemId 
-          : item.menuId === itemId;
-
-        return isSameItem && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item;
-      }),
-    );
-  };
-
-  const removeItem = (itemId, type = 'product') => {
-    setCart((prev) => prev.filter((item) => {
-      const isSameItem = type === 'product' 
-        ? item.productId === itemId 
-        : item.menuId === itemId;
-      return !isSameItem;
-    }));
-  };
+  const items = useCartStore((s) => s.items);
+  const total = useCartStore((s) => s.total);
+  const increaseQuantity = useCartStore((s) => s.increaseQuantity);
+  const decreaseQuantity = useCartStore((s) => s.decreaseQuantity);
+  const removeItem = useCartStore((s) => s.removeItem);
+  const isLoggedIn = useAuthStore((s) => !!s.token);
 
   const goToCheckout = () => {
     if (!isLoggedIn) {
       navigate("/login");
-    } else if (cart.length === 0) {
+    } else if (items.length === 0) {
       alert("Tu carrito está vacío. Agrega productos antes de pagar.");
     } else {
       navigate("/pago");
@@ -100,11 +27,11 @@ function Cart() {
         🛒 Tu Carrito
       </h1>
 
-      {cart.length === 0 ? (
+      {items.length === 0 ? (
         <p className="text-[#1f1f1f] text-center">Tu carrito está vacío.</p>
       ) : (
         <div className="space-y-4">
-          {cart.map((item) => {
+          {items.map((item) => {
             const itemId = item.productId || item.menuId;
             const itemType = item.productId ? 'product' : 'menu';
             
@@ -170,7 +97,7 @@ function Cart() {
           Continuar comprando
         </Link>
 
-        {cart.length > 0 && (
+        {items.length > 0 && (
           <button
             onClick={goToCheckout}
             className="px-6 py-3 bg-[#e53935] hover:bg-red-600 text-white font-bold rounded-lg shadow-md transition duration-300"

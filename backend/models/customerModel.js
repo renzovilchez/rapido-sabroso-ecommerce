@@ -1,62 +1,23 @@
-import db from './db.js';
+import prisma from '../prisma/client.js';
 import bcrypt from 'bcrypt';
 
 const Customer = {
   getAll: async () => {
-    const [rows] = await db.execute('SELECT * FROM cliente');
-    return rows.map(row => ({
-      customerId: row.id_cliente,
-      firstName: row.nombre,
-      lastName: row.apellidos,
-      email: row.email,
-      points: row.puntos,
-      documentType: row.tipo_documento,
-      dni: row.dni,
-      ruc: row.ruc,
-      businessName: row.razon_social,
-      address: row.direccion,
-      taxAddress: row.direccion_fiscal
-    }));
+    return prisma.customer.findMany({
+      select: {
+        customerId: true, firstName: true, lastName: true, email: true,
+        points: true, documentType: true, dni: true, ruc: true,
+        businessName: true, address: true, taxAddress: true,
+      },
+    });
   },
 
   getById: async (id) => {
-    const [rows] = await db.execute('SELECT * FROM cliente WHERE id_cliente = ?', [id]);
-    if (rows.length === 0) return null;
-    const row = rows[0];
-    return {
-      customerId: row.id_cliente,
-      firstName: row.nombre,
-      lastName: row.apellidos,
-      email: row.email,
-      points: row.puntos,
-      documentType: row.tipo_documento,
-      dni: row.dni,
-      ruc: row.ruc,
-      businessName: row.razon_social,
-      address: row.direccion,
-      taxAddress: row.direccion_fiscal,
-      password: row.password // internal use
-    };
+    return prisma.customer.findUnique({ where: { customerId: id } });
   },
 
   getByEmail: async (email) => {
-    const [rows] = await db.execute('SELECT * FROM cliente WHERE email = ?', [email]);
-    if (rows.length === 0) return null;
-    const row = rows[0];
-    return {
-      customerId: row.id_cliente,
-      firstName: row.nombre,
-      lastName: row.apellidos,
-      email: row.email,
-      points: row.puntos,
-      documentType: row.tipo_documento,
-      dni: row.dni,
-      ruc: row.ruc,
-      businessName: row.razon_social,
-      address: row.direccion,
-      taxAddress: row.direccion_fiscal,
-      password: row.password
-    };
+    return prisma.customer.findUnique({ where: { email } });
   },
 
   login: async (email, password) => {
@@ -71,76 +32,56 @@ const Customer = {
   },
 
   create: async ({
-    firstName,
-    lastName,
-    email,
-    password, // expected already hashed
-    documentType = null,
-    dni = null,
-    ruc = null,
-    businessName = null,
-    address = null,
-    taxAddress = null
+    firstName, lastName, email, password,
+    documentType = null, dni = null, ruc = null,
+    businessName = null, address = null, taxAddress = null,
   }) => {
-    const [result] = await db.execute(`
-      INSERT INTO cliente 
-        (nombre, apellidos, email, password, tipo_documento, dni, ruc, razon_social, direccion, direccion_fiscal)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [firstName, lastName, email, password, documentType, dni, ruc, businessName, address, taxAddress]
-    );
-
-    const newCustomer = await Customer.getById(result.insertId);
+    const newCustomer = await prisma.customer.create({
+      data: {
+        firstName, lastName, email, password,
+        documentType, dni, ruc, businessName, address, taxAddress,
+      },
+    });
     const { password: _, ...safeData } = newCustomer;
     return safeData;
   },
 
   update: async (customerId, data) => {
     const {
-      firstName,
-      lastName,
-      email,
-      documentType,
-      dni,
-      ruc,
-      businessName,
-      address,
-      taxAddress,
-      password
+      firstName, lastName, email, documentType, dni, ruc,
+      businessName, address, taxAddress, password,
     } = data;
 
-    const fields = [
-      'nombre = ?', 'apellidos = ?', 'email = ?', 'tipo_documento = ?',
-      'dni = ?', 'ruc = ?', 'razon_social = ?', 'direccion = ?', 'direccion_fiscal = ?'
-    ];
-    const values = [firstName, lastName, email, documentType, dni, ruc, businessName, address, taxAddress];
+    const updateData = { firstName, lastName, email, documentType, dni, ruc, businessName, address, taxAddress };
+    if (password) updateData.password = password;
 
-    if (password) {
-      fields.push('password = ?');
-      values.push(password);
-    }
-
-    values.push(customerId);
-
-    await db.execute(`
-    UPDATE cliente SET ${fields.join(', ')} WHERE id_cliente = ?
-  `, values);
-
-    const updatedCustomer = await Customer.getById(customerId);
+    const updatedCustomer = await prisma.customer.update({
+      where: { customerId },
+      data: updateData,
+    });
     const { password: _, ...safeData } = updatedCustomer;
     return safeData;
   },
 
   updatePoints: async (customerId, points) => {
-    const [result] = await db.execute(
-      'UPDATE cliente SET puntos = ? WHERE id_cliente = ?',
-      [points, customerId]
-    );
-    return result.affectedRows > 0;
+    try {
+      await prisma.customer.update({
+        where: { customerId },
+        data: { points },
+      });
+      return true;
+    } catch {
+      return false;
+    }
   },
 
   delete: async (customerId) => {
-    const [result] = await db.execute('DELETE FROM cliente WHERE id_cliente = ?', [customerId]);
-    return result.affectedRows > 0;
+    try {
+      await prisma.customer.delete({ where: { customerId } });
+      return true;
+    } catch {
+      return false;
+    }
   },
 };
 

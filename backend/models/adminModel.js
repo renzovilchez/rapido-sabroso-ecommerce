@@ -1,25 +1,15 @@
-import db from './db.js';
+import prisma from '../prisma/client.js';
 import bcrypt from 'bcrypt';
 
 const Admin = {
   getAll: async () => {
-    const [rows] = await db.execute('SELECT * FROM admin');
-    return rows.map(row => ({
-      adminId: row.idAdmin,
-      name: row.nombre,
-      email: row.correo
-    }));
+    return prisma.admin.findMany({
+      select: { adminId: true, name: true, email: true },
+    });
   },
 
   getById: async (id) => {
-    const [rows] = await db.execute('SELECT * FROM admin WHERE idAdmin = ?', [id]);
-    if (rows.length === 0) return null;
-    const row = rows[0];
-    return {
-      adminId: row.idAdmin,
-      name: row.nombre,
-      email: row.correo
-    };
+    return prisma.admin.findUnique({ where: { adminId: id } });
   },
 
   login: async (email, password) => {
@@ -30,37 +20,39 @@ const Admin = {
     if (!match) return null;
 
     const { password: _, ...safeData } = admin;
-    return {
-      adminId: safeData.idAdmin,
-      name: safeData.nombre,
-      email: safeData.correo
-    };
+    return safeData;
   },
 
   getByEmail: async (email) => {
-    const [rows] = await db.execute('SELECT * FROM admin WHERE correo = ?', [email]);
-    return rows[0]; // Returns raw data for internal use (login)
+    return prisma.admin.findUnique({ where: { email } });
   },
 
   create: async (name, email, password) => {
-    const [result] = await db.execute(
-      'INSERT INTO admin (nombre, correo, password) VALUES (?, ?, ?)',
-      [name, email, password]
-    );
-    return { adminId: result.insertId, name, email };
+    return prisma.admin.create({
+      data: { name, email, password },
+      select: { adminId: true, name: true, email: true },
+    });
   },
 
   update: async (id, name, email, password) => {
-    const [result] = await db.execute(
-      'UPDATE admin SET nombre = ?, correo = ?, password = ? WHERE idAdmin = ?',
-      [name, email, password, id]
-    );
-    return result.affectedRows > 0 ? { adminId: id, name, email } : null;
+    try {
+      return await prisma.admin.update({
+        where: { adminId: id },
+        data: { name, email, password },
+        select: { adminId: true, name: true, email: true },
+      });
+    } catch {
+      return null;
+    }
   },
 
   delete: async (id) => {
-    const [result] = await db.execute('DELETE FROM admin WHERE idAdmin = ?', [id]);
-    return result.affectedRows > 0;
+    try {
+      await prisma.admin.delete({ where: { adminId: id } });
+      return true;
+    } catch {
+      return false;
+    }
   },
 };
 

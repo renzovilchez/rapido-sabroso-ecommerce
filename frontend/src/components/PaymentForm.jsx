@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { api } from "../services/api";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import NewMethodForm from "./NewMethodForm";
-import { useCart } from "../hooks/useCart";
-import { useCustomer } from "../hooks/useCustomer";
+import useCartStore from "../store/cartStore";
+import useAuthStore from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
 const PaymentForm = () => {
-  const { customer, updateField } = useCustomer();
-  const { cart } = useCart();
+  const user = useAuthStore((s) => s.user);
+  const cart = useCartStore((s) => s.items);
+  const clearCart = useCartStore((s) => s.clearCart);
 
   const [newMethod, setNewMethod] = useState({ name: "", number: "" });
   const [showForm, setShowForm] = useState(false);
@@ -16,6 +17,20 @@ const PaymentForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [methods, setMethods] = useState([]);
   const [selectedMethod, setSelectedMethod] = useState("");
+
+  const customer = {
+    customerId: user?.customerId || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    address: user?.address || '',
+    ruc: user?.ruc || '',
+    dni: user?.dni || '',
+    businessName: user?.businessName || '',
+    taxAddress: user?.taxAddress || '',
+    paymentMethod: '',
+  };
+
+  const updateField = () => {};
 
   const navigate = useNavigate();
 
@@ -131,7 +146,7 @@ const PaymentForm = () => {
       const cleanedOrder = cleanObject(order);
       const orderRes = await api.crearPedido(cleanedOrder);
       
-      localStorage.removeItem("carrito");
+      clearCart();
       navigate("/comprobante/" + orderRes.data.orderId);
     } catch (error) {
       console.error("Error al registrar el pedido:", error);

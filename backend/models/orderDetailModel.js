@@ -1,78 +1,54 @@
-import db from './db.js';
+import prisma from '../prisma/client.js';
 import { extractIGV } from '../helpers/tax.js';
 
 const OrderDetail = {
-  // Obtener todos los detalles de un pedido
   getAll: async () => {
-    const [rows] = await db.execute('SELECT * FROM detalle_pedido');
-    return rows.map(row => ({
-      orderDetailId: row.id_detalle_pedido,
-      orderId: row.id_pedido,
-      productId: row.id_producto,
-      menuId: row.id_menu,
-      quantity: row.cantidad,
-      price: row.precio,
-      subtotal: row.subtotal,
-      tax: row.igv
-    }));
+    return prisma.orderDetail.findMany();
   },
 
-  // Obtener los detalles de un pedido por ID
   getById: async (id) => {
-    const [rows] = await db.execute('SELECT * FROM detalle_pedido WHERE id_detalle_pedido = ?', [id]);
-    if (rows.length === 0) return null;
-    const row = rows[0];
-    return {
-      orderDetailId: row.id_detalle_pedido,
-      orderId: row.id_pedido,
-      productId: row.id_producto,
-      menuId: row.id_menu,
-      quantity: row.cantidad,
-      price: row.precio,
-      subtotal: row.subtotal,
-      tax: row.igv
-    };
+    return prisma.orderDetail.findUnique({ where: { orderDetailId: id } });
   },
 
   create: async (orderId, productId, quantity, price) => {
     const subtotal = quantity * price;
     const tax = extractIGV(subtotal);
 
-    const [result] = await db.execute(
-      `INSERT INTO detalle_pedido 
-        (id_pedido, id_producto, cantidad, precio, subtotal, igv) 
-        VALUES (?, ?, ?, ?, ?, ?)`,
-      [orderId, productId, quantity, price, subtotal, tax]
-    );
+    const detail = await prisma.orderDetail.create({
+      data: {
+        orderId,
+        productId,
+        quantity,
+        price,
+        subtotal,
+        tax,
+      },
+    });
 
-    return {
-      orderDetailId: result.insertId,
-      orderId,
-      productId,
-      quantity,
-      price,
-      subtotal,
-      tax
-    };
+    return detail;
   },
 
-  // Actualizar un detalle de pedido
   update: async (id, orderId, productId, quantity, price) => {
     const subtotal = quantity * price;
     const tax = extractIGV(subtotal);
-    const [result] = await db.execute(
-      'UPDATE detalle_pedido SET id_pedido = ?, id_producto = ?, cantidad = ?, precio = ?, subtotal = ?, igv = ? WHERE id_detalle_pedido = ?',
-      [orderId, productId, quantity, price, subtotal, tax, id]
-    );
-    return result.affectedRows > 0
-      ? { orderDetailId: id, orderId, productId, quantity, price, subtotal, tax }
-      : null;
+
+    try {
+      return await prisma.orderDetail.update({
+        where: { orderDetailId: id },
+        data: { orderId, productId, quantity, price, subtotal, tax },
+      });
+    } catch {
+      return null;
+    }
   },
 
-  // Eliminar un detalle de pedido
   delete: async (id) => {
-    const [result] = await db.execute('DELETE FROM detalle_pedido WHERE id_detalle_pedido = ?', [id]);
-    return result.affectedRows > 0;
+    try {
+      await prisma.orderDetail.delete({ where: { orderDetailId: id } });
+      return true;
+    } catch {
+      return false;
+    }
   },
 };
 

@@ -1,7 +1,8 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
-import { GlobalContext } from "../../context/GlobalContext";
+import useAuthStore from "../../store/authStore";
+import useCartStore from "../../store/cartStore";
 import logoImage from "../../assets/images/logo.png";
 import { normalizeString } from "../../utils/stringUtils";
 import {
@@ -27,8 +28,9 @@ function Navbar() {
   const [combos, setCombos] = useState([]);
   const [products, setProducts] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const { cartItemCount, isLoggedIn, setIsLoggedIn } =
-    useContext(GlobalContext);
+  const cartItemCount = useCartStore((s) => s.count);
+  const isLoggedIn = useAuthStore((s) => !!s.token);
+  const logout = useAuthStore((s) => s.logout);
   const location = useLocation();
 
   useEffect(() => {
@@ -61,8 +63,7 @@ function Navbar() {
   const toggleNav = () => setNavOpen(!navOpen);
 
   const handleLogout = () => {
-    localStorage.removeItem("usuario");
-    setIsLoggedIn(false);
+    logout();
   };
 
   // Unique combo categories

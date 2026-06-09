@@ -1,25 +1,7 @@
-import { useEffect, useState } from "react";
+import useCartStore from "../store/cartStore";
 
 function OrderSummary() {
-    const [items, setItems] = useState([]);
-
-    useEffect(() => {
-        const savedCart = localStorage.getItem('carrito');
-        if (savedCart) {
-            try {
-                const parsedCart = JSON.parse(savedCart);
-                const normalizedCart = parsedCart.map(item => ({
-                    ...item,
-                    price: Number(item.price || item.precio || item.precioProducto || 0),
-                    quantity: Number(item.quantity || item.cantidad || 0),
-                    name: item.name || item.nombre || item.nombreProducto || "Producto",
-                }));
-                setItems(normalizedCart);
-            } catch (error) {
-                console.error("Error al leer el carrito desde localStorage:", error);
-            }
-        }
-    }, []);
+    const items = useCartStore((s) => s.items);
 
     const calculateTotal = () => items.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const calculateTax = (total) => total - (total / 1.18);

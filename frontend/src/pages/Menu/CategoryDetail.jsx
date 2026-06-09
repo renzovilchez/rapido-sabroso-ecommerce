@@ -1,28 +1,20 @@
-import { useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ProductCard from "../../components/ProductCard";
-import { GlobalContext } from "../../context/GlobalContext";
+import useCartStore from "../../store/cartStore";
 import { normalizeString } from "../../utils/stringUtils";
 
 function CategoryDetail() {
-  const { tipo } = useParams(); // URL param (slug)
+  const { tipo } = useParams();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const { setCartItemCount } = useContext(GlobalContext);
+  const addItem = useCartStore((s) => s.addItem);
   const hasLoadedLocalStorage = useRef(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!hasLoadedLocalStorage.current) {
-      const savedCart = JSON.parse(localStorage.getItem("carrito")) || [];
-      const totalInCart = savedCart.reduce(
-        (acc, item) => acc + item.cantidad,
-        0,
-      );
-      setCartItemCount(totalInCart);
-      hasLoadedLocalStorage.current = true;
-    }
+    hasLoadedLocalStorage.current = true;
 
     axios
       .get("http://localhost:5000/api/products")
@@ -45,7 +37,7 @@ function CategoryDetail() {
         setError("No se pudo cargar el menú. Intenta nuevamente más tarde.");
         setLoading(false);
       });
-  }, [setCartItemCount]);
+  }, []);
 
   // Original product type for display title
   const originalType =
@@ -57,37 +49,13 @@ function CategoryDetail() {
     (p) => normalizeString(p.productType) === tipo.toLowerCase(),
   );
 
-  // Function to add to cart
   const addToCart = (product) => {
-    const currentCart = JSON.parse(localStorage.getItem("carrito")) || [];
-    const productId = Number(product.productId);
-
-    const exists = currentCart.find((p) => p.productId === productId);
-    let newCart;
-
-    const newItem = {
-      productId,
+    addItem({
+      productId: Number(product.productId),
       name: product.name,
-      description: product.description,
       price: Number(product.price),
-      image: product.image,
-      quantity: 1,
-      type: "product",
-      productType: product.productType || "other",
-    };
-
-    if (exists) {
-      newCart = currentCart.map((p) =>
-        p.productId === productId ? { ...p, quantity: p.quantity + 1 } : p,
-      );
-    } else {
-      newCart = [...currentCart, newItem];
-    }
-
-    localStorage.setItem("carrito", JSON.stringify(newCart));
-
-    const total = newCart.reduce((acc, item) => acc + item.quantity, 0);
-    setCartItemCount(total);
+      image: product.image || '',
+    });
   };
 
   if (loading) return <p className="text-center mt-8">Cargando productos...</p>;

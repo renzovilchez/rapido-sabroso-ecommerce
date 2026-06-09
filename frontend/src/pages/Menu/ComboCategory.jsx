@@ -1,17 +1,16 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { GlobalContext } from "../../context/GlobalContext";
+import useCartStore from "../../store/cartStore";
 import MenuCard from "../../components/Menu/MenuCard";
 import { normalizeString } from "../../utils/stringUtils";
 
 function ComboCategory() {
-  const { tipo } = useParams(); // Keep frontend params as is
+  const { tipo } = useParams();
   const [combos, setCombos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const { setCartItemCount } = useContext(GlobalContext);
+  const addItem = useCartStore((s) => s.addItem);
 
   useEffect(() => {
     async function fetchCombos() {
@@ -29,37 +28,12 @@ function ComboCategory() {
   }, []);
 
   const addToCart = (combo) => {
-    const currentCart = JSON.parse(localStorage.getItem("carrito")) || [];
-
-    const menuId = Number(combo.menuId);
-
-    const exists = currentCart.find(
-      (item) => item.type === "combo" && item.menuId === menuId,
-    );
-
-    let newCart;
-    if (exists) {
-      newCart = currentCart.map((item) =>
-        item.type === "combo" && item.menuId === menuId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item,
-      );
-    } else {
-      const newItem = {
-        menuId,
-        name: combo.name,
-        description: combo.description,
-        price: Number(combo.price),
-        image: combo.image || "",
-        quantity: 1,
-        type: "combo",
-      };
-      newCart = [...currentCart, newItem];
-    }
-
-    localStorage.setItem("carrito", JSON.stringify(newCart));
-    const total = newCart.reduce((acc, item) => acc + item.quantity, 0);
-    setCartItemCount(total);
+    addItem({
+      menuId: Number(combo.menuId),
+      name: combo.name,
+      price: Number(combo.price),
+      image: combo.image || '',
+    });
   };
 
   if (loading) return <p className="text-center mt-8">Cargando combos...</p>;

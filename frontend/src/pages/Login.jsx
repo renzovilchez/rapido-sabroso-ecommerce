@@ -1,11 +1,11 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiAxios } from '../services/api';
-import { GlobalContext } from '../context/GlobalContext';
+import useAuthStore from '../store/authStore';
 import fondoSilueta from '../assets/images/saturacion.jpg';
 const Login = () => {
   const navigate = useNavigate();
-  const { setIsLoggedIn } = useContext(GlobalContext);
+  const login = useAuthStore((s) => s.login);
   const [formData, setFormData] = useState({
     correo: '',
     password: ''
@@ -28,9 +28,7 @@ const Login = () => {
       const response = await apiAxios.post('/customers/login', formData);
 
       if (response.data.success) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('usuario', JSON.stringify(response.data.cliente));
-        setIsLoggedIn(true);
+        login(response.data.token, response.data.cliente);
         navigate('/home');
       } else {
         setError('Correo o contraseña incorrectos');

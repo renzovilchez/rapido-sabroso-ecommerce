@@ -1,104 +1,92 @@
-import db from './db.js';
+import prisma from '../prisma/client.js';
 
 const Product = {
   getAll: async () => {
-    const [rows] = await db.execute(`
-      SELECT 
-        p.id_producto, 
-        p.nombre, 
-        p.descripcion, 
-        p.precio, 
-        p.stock, 
-        p.imagen,
-        tp.nombre AS productType, 
-        c.nombre AS productCategory
-      FROM producto p
-      JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo_producto
-      LEFT JOIN categoria c ON tp.id_categoria = c.id_categoria;
-    `);
-    
-    return rows.map(row => ({
-      productId: row.id_producto,
-      name: row.nombre,
-      description: row.descripcion,
-      price: row.precio,
-      stock: row.stock,
-      image: row.imagen,
-      productType: row.productType,
-      productCategory: row.productCategory
+    const products = await prisma.product.findMany({
+      include: {
+        productType: {
+          select: { name: true },
+        },
+      },
+    });
+
+    return products.map(p => ({
+      productId: p.productId,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      stock: p.stock,
+      image: p.image,
+      productType: p.productType?.name || null,
+      productCategory: null,
     }));
   },
 
   getById: async (id) => {
-    const [rows] = await db.execute(`
-      SELECT 
-        p.id_producto, 
-        p.nombre, 
-        p.descripcion, 
-        p.precio, 
-        p.stock, 
-        p.imagen,
-        tp.nombre AS productType, 
-        c.nombre AS productCategory
-      FROM producto p
-      JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo_producto
-      LEFT JOIN categoria c ON tp.id_categoria = c.id_categoria
-      WHERE p.id_producto = ?
-    `, [id]);
+    const p = await prisma.product.findUnique({
+      where: { productId: id },
+      include: {
+        productType: {
+          select: { name: true },
+        },
+      },
+    });
+    if (!p) return null;
 
-    if (rows.length === 0) return null;
-    
-    const row = rows[0];
     return {
-      productId: row.id_producto,
-      name: row.nombre,
-      description: row.descripcion,
-      price: row.precio,
-      stock: row.stock,
-      image: row.image,
-      productType: row.productType,
-      productCategory: row.productCategory
+      productId: p.productId,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      stock: p.stock,
+      image: p.image,
+      productType: p.productType?.name || null,
+      productCategory: null,
     };
   },
 
   create: async (name, description, price, image, stock, productTypeId) => {
-    const [result] = await db.execute(`
-      INSERT INTO producto (nombre, descripcion, precio, imagen, stock, id_tipo_producto)
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, description, price, image, stock, productTypeId]
-    );
+    const product = await prisma.product.create({
+      data: { name, description, price, image, stock, productTypeId },
+    });
     return {
-      productId: result.insertId,
-      name,
-      description,
-      price,
-      image,
-      stock,
-      productTypeId
+      productId: product.productId,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      image: product.image,
+      stock: product.stock,
+      productTypeId: product.productTypeId,
     };
   },
 
   update: async (id, name, description, price, image, stock, productTypeId) => {
-    const [result] = await db.execute(`
-      UPDATE producto 
-      SET nombre = ?, descripcion = ?, precio = ?, imagen = ?, stock = ?, id_tipo_producto = ?
-      WHERE id_producto = ?`,
-      [name, description, price, image, stock, productTypeId, id]
-    );
-    return result.affectedRows > 0 ? {
-      productId: id,
-      name,
-      description,
-      price,
-      image,
-      stock,
-      productTypeId
-    } : null;
+    try {
+      const product = await prisma.product.update({
+        where: { productId: id },
+        data: { name, description, price, image, stock, productTypeId },
+      });
+      return {
+        productId: product.productId,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.image,
+        stock: product.stock,
+        productTypeId: product.productTypeId,
+      };
+    } catch {
+      return null;
+    }
   },
 
   delete: async (id) => {
-    const [result] = await db.execute('DELETE FROM producto WHERE id_producto = ?', [id]);
-    return result.affectedRows > 0;
+    try {
+      await prisma.product.delete({ where: { productId: id } });
+      return true;
+    } catch {
+      return false;
+    }
   },
 };
 
