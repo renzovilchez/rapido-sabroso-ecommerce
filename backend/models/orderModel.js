@@ -1,4 +1,5 @@
 import db from "./db.js";
+import { extractIGV, calculateSubtotal } from "../helpers/tax.js";
 
 const Order = {
   // Obtener todos los pedidos con JOINs
@@ -112,8 +113,8 @@ const Order = {
     }
 
     total = Math.max(0, total - discount);
-    const tax = +(total * 0.18).toFixed(2);
-    const subtotal = +(total - tax).toFixed(2);
+    const tax = extractIGV(total);
+    const subtotal = calculateSubtotal(total);
 
     try {
       const [orderResult] = await db.execute(
@@ -149,7 +150,7 @@ const Order = {
         }
 
         const itemSubtotal = +(item.price * item.quantity).toFixed(2);
-        const itemTax = +((itemSubtotal * 18) / 118).toFixed(2);
+        const itemTax = extractIGV(itemSubtotal);
 
         await db.execute(
           `
@@ -170,7 +171,7 @@ const Order = {
 
       for (const combo of combos) {
         const comboSubtotal = +(combo.price * combo.quantity).toFixed(2);
-        const comboTax = +((comboSubtotal * 18) / 118).toFixed(2);
+        const comboTax = extractIGV(comboSubtotal);
 
         await db.execute(
           `
@@ -260,7 +261,7 @@ const Order = {
     }
 
     const totalWithDiscount = Math.max(0, subtotal - discount);
-    const tax = +((totalWithDiscount * 18) / 118).toFixed(2);
+    const tax = extractIGV(totalWithDiscount);
     const total = +totalWithDiscount.toFixed(2);
 
     try {
@@ -294,7 +295,7 @@ const Order = {
 
       for (const product of products) {
         const prodSubtotal = +(product.price * product.quantity).toFixed(2);
-        const prodTax = +((prodSubtotal * 18) / 118).toFixed(2);
+        const prodTax = extractIGV(prodSubtotal);
 
         await db.execute(
           `
@@ -315,7 +316,7 @@ const Order = {
 
       for (const combo of combos) {
         const comboSubtotal = +(combo.price * combo.quantity).toFixed(2);
-        const comboTax = +((comboSubtotal * 18) / 118).toFixed(2);
+        const comboTax = extractIGV(comboSubtotal);
 
         await db.execute(
           `

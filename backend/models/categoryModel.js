@@ -47,7 +47,7 @@ const Category = {
 
   // Obtener categorías con sus tipos de producto
   getCategoriesWithTypes: async () => {
-    const [rows] = await db.query(`
+    const [rows] = await db.execute(`
       SELECT 
         c.id_categoria, 
         c.nombre AS categoryName,

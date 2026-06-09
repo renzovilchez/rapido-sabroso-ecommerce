@@ -1,4 +1,4 @@
-const TYPOGRAPHY = "font-['Playfair_Display']";
+import { TYPOGRAPHY } from "../../utils/constants";
 
 const SectionTitle = ({ children }) => (
   <h2

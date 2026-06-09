@@ -1,6 +1,7 @@
 import Customer from '../models/customerModel.js';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../helpers/jwt.js';
+import { SALT_ROUNDS } from '../config/constants.js';
 
 const customerController = {
   getAll: async (req, res) => {
@@ -74,8 +75,7 @@ const customerController = {
       } = req.body;
 
       // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
       const newCustomer = await Customer.create({
         firstName,
@@ -101,8 +101,7 @@ const customerController = {
       const data = { ...req.body };
 
       if (data.password) {
-        const salt = await bcrypt.genSalt(10);
-        data.password = await bcrypt.hash(data.password, salt);
+        data.password = await bcrypt.hash(data.password, SALT_ROUNDS);
       }
 
       const updated = await Customer.update(id, data);

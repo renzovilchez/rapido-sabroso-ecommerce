@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
-const TYPOGRAPHY = "font-['Playfair_Display']";
+import { TYPOGRAPHY } from "../../utils/constants";
 
 const Brand = () => (
   <Link to="/" className="flex items-center gap-3.5 group">

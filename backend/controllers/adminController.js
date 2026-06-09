@@ -1,6 +1,7 @@
 import Admin from '../models/adminModel.js';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../helpers/jwt.js';
+import { SALT_ROUNDS } from '../config/constants.js';
 
 const adminController = {
   getAll: async (req, res) => {
@@ -79,8 +80,7 @@ const adminController = {
     try {
       const { name, email, password } = req.body;
       // Hashear la contraseña antes de pasarla al modelo
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
       
       const newAdmin = await Admin.create(name, email, hashedPassword);
       res.status(201).json(newAdmin);
@@ -96,8 +96,7 @@ const adminController = {
       
       let finalPassword = password;
       if (password) {
-        const salt = await bcrypt.genSalt(10);
-        finalPassword = await bcrypt.hash(password, salt);
+        finalPassword = await bcrypt.hash(password, SALT_ROUNDS);
       }
 
       const updated = await Admin.update(id, name, email, finalPassword);

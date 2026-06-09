@@ -1,4 +1,5 @@
 import db from './db.js';
+import { extractIGV } from '../helpers/tax.js';
 
 const OrderDetail = {
   // Obtener todos los detalles de un pedido
@@ -34,8 +35,8 @@ const OrderDetail = {
   },
 
   create: async (orderId, productId, quantity, price) => {
-    const subtotal = quantity * price; // Calculamos el subtotal
-    const tax = +((subtotal * 18) / 118).toFixed(2);
+    const subtotal = quantity * price;
+    const tax = extractIGV(subtotal);
 
     const [result] = await db.execute(
       `INSERT INTO detalle_pedido 
@@ -58,7 +59,7 @@ const OrderDetail = {
   // Actualizar un detalle de pedido
   update: async (id, orderId, productId, quantity, price) => {
     const subtotal = quantity * price;
-    const tax = +((subtotal * 18) / 118).toFixed(2);
+    const tax = extractIGV(subtotal);
     const [result] = await db.execute(
       'UPDATE detalle_pedido SET id_pedido = ?, id_producto = ?, cantidad = ?, precio = ?, subtotal = ?, igv = ? WHERE id_detalle_pedido = ?',
       [orderId, productId, quantity, price, subtotal, tax, id]

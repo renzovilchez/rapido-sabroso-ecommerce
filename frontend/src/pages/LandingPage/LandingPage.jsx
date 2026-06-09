@@ -10,8 +10,7 @@ import { Typewriter } from "react-simple-typewriter";
 import hamburguesaLanding from "../../assets/images/hamburguesaLanding.png";
 import { Timer, Leaf, Gift, Flame, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const TYPOGRAPHY = "font-['Playfair_Display']";
+import { TYPOGRAPHY } from "../../utils/constants";
 
 export default function LandingPage() {
   const typewriterWords = [

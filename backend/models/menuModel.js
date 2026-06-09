@@ -3,7 +3,7 @@ import db from './db.js';
 const Menu = {
     // Obtener todos los combos con sus productos
     async getAll() {
-        const [rows] = await db.query(`
+        const [rows] = await db.execute(`
       SELECT 
         m.id_menu,
         m.nombre,
@@ -60,7 +60,7 @@ const Menu = {
 
     // Crear un nuevo combo
     async create({ name, description, image, price, category }) {
-        const [result] = await db.query(
+        const [result] = await db.execute(
             'INSERT INTO menu (nombre, descripcion, imagen, precio, tipo_menu) VALUES (?, ?, ?, ?, ?)',
             [name, description, image, price, category]
         );
@@ -69,7 +69,7 @@ const Menu = {
 
     // Actualizar un combo existente
     async update(id, { name, description, image, price, category }) {
-        const [result] = await db.query(
+        const [result] = await db.execute(
             'UPDATE menu SET nombre = ?, descripcion = ?, imagen = ?, precio = ?, tipo_menu = ? WHERE id_menu = ?',
             [name, description, image, price, category, id]
         );
@@ -78,7 +78,7 @@ const Menu = {
 
     // Eliminar un combo
     async delete(id) {
-        const [result] = await db.query('DELETE FROM menu WHERE id_menu = ?', [id]);
+        const [result] = await db.execute('DELETE FROM menu WHERE id_menu = ?', [id]);
         return result.affectedRows > 0;
     },
 };
