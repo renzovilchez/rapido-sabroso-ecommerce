@@ -1,5 +1,6 @@
 import Admin from '../models/adminModel.js';
 import bcrypt from 'bcrypt';
+import { generateToken } from '../helpers/jwt.js';
 
 const adminController = {
   getAll: async (req, res) => {
@@ -54,9 +55,15 @@ const adminController = {
       if (!match) return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
 
       const { password: _, ...safeData } = admin;
+      const token = generateToken({
+        id: safeData.idAdmin,
+        email: safeData.correo,
+        role: 'admin'
+      });
       res.status(200).json({ 
         success: true, 
-        message: 'Login exitoso', 
+        message: 'Login exitoso',
+        token,
         admin: {
           adminId: safeData.idAdmin,
           name: safeData.nombre,

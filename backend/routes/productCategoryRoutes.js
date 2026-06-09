@@ -1,13 +1,16 @@
 import express from 'express';
 import productCategoryController from '../controllers/productCategoryController.js';
+import { verifyAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Rutas para obtener, crear y eliminar relaciones entre productos y categorías
+// Lectura pública
 router.get('/categories-by-type', productCategoryController.getCategoriesByType);
 router.get('/', productCategoryController.getAll);
 router.get('/:id', productCategoryController.getById);
-router.post('/', productCategoryController.create);
-router.delete('/:productId/:categoryId', productCategoryController.delete);
+
+// Administración (admin)
+router.post('/', verifyAdmin, productCategoryController.create);
+router.delete('/:productId/:categoryId', verifyAdmin, productCategoryController.delete);
 
 export default router;

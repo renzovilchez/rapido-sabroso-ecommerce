@@ -7,7 +7,7 @@ const categoryController = {
       const categories = await Category.getAll();
       res.json(categories);
     } catch (err) {
-      res.status(500).json({ error: 'Error al obtener categorías', detalle: err.message });
+      res.status(500).json({ error: 'Error al obtener categorías' });
     }
   },
 
@@ -22,7 +22,7 @@ const categoryController = {
         res.status(404).json({ error: 'Categoría no encontrada' });
       }
     } catch (err) {
-      res.status(500).json({ error: 'Error al obtener categoría', detalle: err.message });
+      res.status(500).json({ error: 'Error al obtener categoría' });
     }
   },
 
@@ -33,7 +33,7 @@ const categoryController = {
       const newCategory = await Category.create(name);
       res.status(201).json(newCategory);
     } catch (err) {
-      res.status(500).json({ error: 'Error al crear categoría', detalle: err.message });
+      res.status(500).json({ error: 'Error al crear categoría' });
     }
   },
 
@@ -49,7 +49,7 @@ const categoryController = {
         res.status(404).json({ error: 'Categoría no encontrada' });
       }
     } catch (err) {
-      res.status(500).json({ error: 'Error al actualizar categoría', detalle: err.message });
+      res.status(500).json({ error: 'Error al actualizar categoría' });
     }
   },
 
@@ -64,7 +64,7 @@ const categoryController = {
         res.status(404).json({ error: 'Categoría no encontrada' });
       }
     } catch (err) {
-      res.status(500).json({ error: 'Error al eliminar categoría', detalle: err.message });
+      res.status(500).json({ error: 'Error al eliminar categoría' });
     }
   },
 
@@ -74,7 +74,7 @@ const categoryController = {
       const result = await Category.getCategoriesWithTypes();
       res.json(result);
     } catch (err) {
-      res.status(500).json({ error: 'Error al obtener categorías con tipos', detalle: err.message });
+      res.status(500).json({ error: 'Error al obtener categorías con tipos' });
     }
   }
 };

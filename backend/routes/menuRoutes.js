@@ -1,18 +1,15 @@
 import express from 'express';
 import menuController from '../controllers/menuController.js';
+import { verifyAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Obtener todos los menús con sus productos
+// Lectura pública
 router.get('/', menuController.getAll);
 
-// Crear un nuevo menú
-router.post('/', menuController.create);
-
-// Actualizar un menú existente
-router.put('/:id', menuController.update);
-
-// Eliminar un menú
-router.delete('/:id', menuController.delete);
+// Administración (admin)
+router.post('/', verifyAdmin, menuController.create);
+router.put('/:id', verifyAdmin, menuController.update);
+router.delete('/:id', verifyAdmin, menuController.delete);
 
 export default router;

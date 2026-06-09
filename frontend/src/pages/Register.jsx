@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import { apiAxios } from '../services/api';
 import fondoSilueta from '../assets/images/saturacion.jpg';
 
 const Register = () => {
@@ -53,20 +53,15 @@ const Register = () => {
 
 
     try {
-      const response = await axios.post('http://localhost:5000/api/customers/register', datosFinales);
+      await apiAxios.post('/customers/register', datosFinales);
       navigate('/login');
     } catch (error) {
       const respuesta = error.response?.data;
-      console.error("Error en el registro:", respuesta);
-
-      if (respuesta?.detalle?.includes("Duplicate entry")) {
-        const correoDuplicado = respuesta.detalle.split("'")[1];
-        setError(`El correo ${correoDuplicado} ya está registrado.`);
+      if (respuesta?.error) {
+        setError(respuesta.error);
       } else if (respuesta?.errores && typeof respuesta.errores === 'object') {
         const mensajes = Object.values(respuesta.errores).flat();
         setError(mensajes.join(" "));
-      } else if (respuesta?.mensaje) {
-        setError(respuesta.mensaje);
       } else {
         setError("Ocurrió un error al registrar. Intenta nuevamente.");
       }

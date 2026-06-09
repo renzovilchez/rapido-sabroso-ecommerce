@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import { apiAxios } from '../services/api';
 import { GlobalContext } from '../context/GlobalContext';
 import fondoSilueta from '../assets/images/saturacion.jpg';
 const Login = () => {
@@ -25,20 +25,12 @@ const Login = () => {
     setError('');
 
     try {
-      const { correo, password } = formData;
-
-      const response = await axios.post('http://localhost:5000/api/customers/login', formData);
+      const response = await apiAxios.post('/customers/login', formData);
 
       if (response.data.success) {
-        console.log('Login exitoso:', response.data.cliente);
-
-        // Guarda el usuario en el localStorage
+        localStorage.setItem('token', response.data.token);
         localStorage.setItem('usuario', JSON.stringify(response.data.cliente));
-
-        // Actualiza el estado de isLoggedIn en el contexto global
         setIsLoggedIn(true);
-
-        // Redirige al usuario a la página de inicio
         navigate('/home');
       } else {
         setError('Correo o contraseña incorrectos');

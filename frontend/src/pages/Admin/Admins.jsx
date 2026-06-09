@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { apiAxios } from '../../services/api';
 
 function Administradores() {
   const [admins, setAdmins] = useState([]);
@@ -12,14 +13,11 @@ function Administradores() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API = 'http://localhost:5000/api/admins'; // Asegúrate de que sea esta ruta
-
   const fetchAdmins = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API);
-      const data = await res.json();
-      setAdmins(Array.isArray(data) ? data : [data]);
+      const res = await apiAxios.get('/admins');
+      setAdmins(Array.isArray(res.data) ? res.data : [res.data]);
     } catch {
       setMessage({ type: 'error', text: 'Error al cargar administradores' });
     } finally {
@@ -39,12 +37,7 @@ function Administradores() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error('Error al registrar');
+      await apiAxios.post('/admins', formData);
       setMessage({ type: 'success', text: 'Administrador registrado' });
       setFormData({ nombre: '', apellidos: '', email: '', password: '' });
       fetchAdmins();
@@ -71,12 +64,7 @@ function Administradores() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API}/${editingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error('Error al actualizar');
+      await apiAxios.put(`/admins/${editingId}`, formData);
       setMessage({ type: 'success', text: 'Administrador actualizado' });
       cancelEdit();
       fetchAdmins();
@@ -88,8 +76,7 @@ function Administradores() {
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar este administrador?')) return;
     try {
-      const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Error al eliminar');
+      await apiAxios.delete(`/admins/${id}`);
       setMessage({ type: 'success', text: 'Administrador eliminado' });
       fetchAdmins();
     } catch {

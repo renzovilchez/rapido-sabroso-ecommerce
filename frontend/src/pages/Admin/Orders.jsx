@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { apiAxios } from "../../services/api";
 
 function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -7,16 +8,12 @@ function Pedidos() {
   const [message, setMessage] = useState(null);
   const [detalleVisible, setDetalleVisible] = useState(null);
 
-  const API_PEDIDOS = "http://localhost:5000/api/orders";
-  const API_DETALLES = "http://localhost:5000/api/order-details";
-
-  // Obtener pedidos
   const fetchPedidos = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_PEDIDOS);
-      const data = await res.json();
-      setPedidos(Array.isArray(data) ? data : [data]); // Aseguramos array
+      const res = await apiAxios.get("/orders");
+      const data = res.data;
+      setPedidos(Array.isArray(data) ? data : [data]);
     } catch (err) {
       setMessage({ type: "error", text: "Error al cargar pedidos" });
     } finally {
@@ -24,11 +21,10 @@ function Pedidos() {
     }
   };
 
-  // Obtener detalles para un pedido específico
   const fetchDetalles = async (id_pedido) => {
     try {
-      const res = await fetch(API_DETALLES);
-      const data = await res.json();
+      const res = await apiAxios.get("/order-details");
+      const data = res.data;
       const filtrados = Array.isArray(data)
         ? data.filter((d) => d.id_pedido === id_pedido)
         : [];

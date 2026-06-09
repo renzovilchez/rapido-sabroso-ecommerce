@@ -1,5 +1,6 @@
 import Customer from '../models/customerModel.js';
 import bcrypt from 'bcrypt';
+import { generateToken } from '../helpers/jwt.js';
 
 const customerController = {
   getAll: async (req, res) => {
@@ -25,7 +26,12 @@ const customerController = {
     try {
       const { email } = req.params;
       const customer = await Customer.getByEmail(email);
-      customer ? res.json(customer) : res.status(404).json({ error: 'Cliente no encontrado' });
+      if (customer) {
+        const { password: _, ...safeData } = customer;
+        res.json(safeData);
+      } else {
+        res.status(404).json({ error: 'Cliente no encontrado' });
+      }
     } catch {
       res.status(500).json({ error: 'Error al buscar cliente por correo' });
     }
@@ -40,8 +46,13 @@ const customerController = {
       const match = await bcrypt.compare(password, customer.password);
       if (!match) return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
 
-      delete customer.password;
-      res.status(200).json({ success: true, message: 'Login exitoso', customer });
+      const token = generateToken({
+        id: customer.customerId,
+        email: customer.email,
+        role: 'customer'
+      });
+      const { password: _, ...safeCustomer } = customer;
+      res.status(200).json({ success: true, message: 'Login exitoso', token, customer: safeCustomer });
     } catch (err) {
       res.status(500).json({ error: 'Error al intentar iniciar sesión' });
     }
@@ -80,7 +91,7 @@ const customerController = {
       });
       res.status(201).json(newCustomer);
     } catch (error) {
-      res.status(500).json({ error: 'Error al registrar cliente', detalle: error.message });
+      res.status(500).json({ error: 'Error al registrar cliente' });
     }
   },
 

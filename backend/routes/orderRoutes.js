@@ -1,21 +1,16 @@
 import express from 'express';
 import orderController from '../controllers/orderController.js';
+import { verifyAdmin, verifyCustomer } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Obtener todos los pedidos
-router.get('/', orderController.getAll);
+// Gestión de pedidos (admin)
+router.get('/', verifyAdmin, orderController.getAll);
+router.get('/:id', verifyAdmin, orderController.getById);
+router.delete('/:id', verifyAdmin, orderController.delete);
 
-// Obtener un pedido por ID
-router.get('/:id', orderController.getById);
-
-// Crear un nuevo pedido
-router.post('/', orderController.create);
-
-// Actualizar un pedido por ID
-router.put('/:id', orderController.update);
-
-// Eliminar un pedido por ID
-router.delete('/:id', orderController.delete);
+// Creación y actualización de pedidos (cliente autenticado)
+router.post('/', verifyCustomer, orderController.create);
+router.put('/:id', verifyCustomer, orderController.update);
 
 export default router;

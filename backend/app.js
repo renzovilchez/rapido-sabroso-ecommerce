@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -20,7 +22,22 @@ const __dirname = path.resolve();
 
 const app = express();
 
-app.use(cors());
+app.use(helmet());
+
+const corsOptions = {
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: 'Demasiadas solicitudes, intenta de nuevo más tarde' },
+});
+app.use(globalLimiter);
+
 app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'public/images')));

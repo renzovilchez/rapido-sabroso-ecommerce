@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiAxios } from '../services/api';
 
 const HistorialPedido = () => {
   const [comprobantes, setComprobantes] = useState([]);
@@ -11,9 +12,8 @@ const HistorialPedido = () => {
   useEffect(() => {
     const fetchHistorial = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/receipts/customer/${cliente.id_cliente}`);
-        const data = await response.json();
-        setComprobantes(data);
+        const res = await apiAxios.get(`/receipts/customer/${cliente.customerId}`);
+        setComprobantes(res.data);
       } catch (error) {
         console.error('Error al obtener historial:', error);
       } finally {
@@ -21,10 +21,10 @@ const HistorialPedido = () => {
       }
     };
 
-    if (cliente?.id_cliente) {
+    if (cliente?.customerId) {
       fetchHistorial();
     }
-  }, [cliente?.id_cliente]);
+  }, [cliente?.customerId]);
 
   if (loading) return <p className="text-center">Cargando historial...</p>;
 

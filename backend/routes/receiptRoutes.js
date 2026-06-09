@@ -1,24 +1,17 @@
 import express from 'express';
 import receiptController from '../controllers/receiptController.js';
+import { verifyAdmin, verifyCustomer } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Obtener todos los comprobantes
-router.get('/', receiptController.getAll);
+// Consulta de comprobantes (cliente autenticado)
+router.get('/order/:id', verifyCustomer, receiptController.getByOrderId);
+router.get('/customer/:customerId', verifyCustomer, receiptController.getByCustomerId);
 
-// Obtener un comprobante por pedido
-router.get('/order/:id', receiptController.getByOrderId);
-
-// Ruta para obtener comprobantes por cliente
-router.get('/customer/:customerId', receiptController.getByCustomerId);
-
-// Crear un nuevo comprobante
-router.post('/', receiptController.create);
-
-// Actualizar un comprobante por ID
-router.put('/:id', receiptController.update);
-
-// Eliminar un comprobante por ID
-router.delete('/:id', receiptController.delete);
+// Administración de comprobantes (admin)
+router.get('/', verifyAdmin, receiptController.getAll);
+router.post('/', verifyAdmin, receiptController.create);
+router.put('/:id', verifyAdmin, receiptController.update);
+router.delete('/:id', verifyAdmin, receiptController.delete);
 
 export default router;

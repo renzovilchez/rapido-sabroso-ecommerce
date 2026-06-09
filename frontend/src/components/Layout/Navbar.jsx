@@ -18,19 +18,8 @@ import {
   Video,
   Phone,
   History,
-  Flame,
-  Coffee,
-  Sandwich,
-  ClipboardList,
-  Sparkles,
-  Beef,
-  Leaf,
-  Crown,
-  GlassWater,
-  Citrus,
-  Droplets,
-  Wine,
 } from "lucide-react";
+import { getComboIcon, getProductIcon } from "../../utils/categoryUtils";
 
 function Navbar() {
   const [navOpen, setNavOpen] = useState(false);
@@ -85,35 +74,6 @@ function Navbar() {
   const uniqueProductCategories = [
     ...new Set(products.map((product) => product.productType).filter(Boolean)),
   ];
-
-  // Get icon for combo category
-  const getComboIcon = (category) => {
-    const name = category.toLowerCase();
-    if (name.includes("personal")) return Sparkles;
-    if (name.includes("familiar")) return UtensilsCrossed;
-    if (name.includes("duo") || name.includes("pareja")) return Sandwich;
-    if (name.includes("ejecutivo")) return ClipboardList;
-    return Sparkles;
-  };
-
-  // Get icon for product category
-  const getProductIcon = (category) => {
-    const name = category.toLowerCase();
-    // Hamburguesas
-    if (name.includes("clasica")) return Beef;
-    if (name.includes("especial")) return Flame;
-    if (name.includes("vegana")) return Leaf;
-    if (name.includes("gourmet")) return Crown;
-    // Bebidas
-    if (name.includes("refresco")) return GlassWater;
-    if (name.includes("jugo") || name.includes("natural")) return Citrus;
-    if (name.includes("agua")) return Droplets;
-    if (name.includes("tradicional")) return Wine;
-    // Default
-    if (name.includes("hamburguesa")) return Flame;
-    if (name.includes("bebida")) return Coffee;
-    return UtensilsCrossed;
-  };
 
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + "/");

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { apiAxios } from '../../services/api';
 
 function CategoriasProductos() {
   const [categorias, setCategorias] = useState([]);
@@ -7,18 +8,13 @@ function CategoriasProductos() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = 'http://localhost:5000/api/categories';
-
-  // Obtener categorías
   const fetchCategorias = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/con-tipos/all`); // usa la ruta especial
-      if (!res.ok) throw new Error('Error al cargar las categorías');
-      const data = await res.json();
-      setCategorias(data);
+      const res = await apiAxios.get('/categories/with-types/all');
+      setCategorias(res.data);
     } catch (err) {
-      setMessage({ type: 'error', text: err.message });
+      setMessage({ type: 'error', text: 'Error al cargar las categorías' });
     } finally {
       setLoading(false);
     }
@@ -41,12 +37,7 @@ function CategoriasProductos() {
       return;
     }
     try {
-      const res = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error('Error al crear categoría');
+      await apiAxios.post('/categories', formData);
       setFormData({ nombre: '' });
       setMessage({ type: 'success', text: 'Categoría creada' });
       fetchCategorias();
@@ -69,12 +60,7 @@ function CategoriasProductos() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_BASE}/${editingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error('Error al actualizar categoría');
+      await apiAxios.put(`/categories/${editingId}`, formData);
       setMessage({ type: 'success', text: 'Categoría actualizada' });
       setEditingId(null);
       setFormData({ nombre: '' });
@@ -87,10 +73,7 @@ function CategoriasProductos() {
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar esta categoría?')) return;
     try {
-      const res = await fetch(`${API_BASE}/${id}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) throw new Error('Error al eliminar categoría');
+      await apiAxios.delete(`/categories/${id}`);
       setMessage({ type: 'success', text: 'Categoría eliminada' });
       fetchCategorias();
     } catch (err) {

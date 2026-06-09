@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { apiAxios } from '../../services/api';
 
 function Productos() {
     const [productos, setProductos] = useState([]);
@@ -19,16 +20,11 @@ function Productos() {
         tipoProductoId: '',
     });
 
-    const API_PRODUCTOS = 'http://localhost:5000/api/products';
-    const API_TIPOS = 'http://localhost:5000/api/product-types';
-    const API_CATEGORIAS = 'http://localhost:5000/api/categories';
-
-    // Cargar productos
     const fetchProductos = async () => {
         setLoading(true);
         try {
-            const res = await fetch(API_PRODUCTOS);
-            const data = await res.json();
+            const res = await apiAxios.get('/products');
+            const data = res.data;
             setProductos(Array.isArray(data) ? data : []);
             setError(null);
         } catch {
@@ -38,19 +34,16 @@ function Productos() {
         }
     };
 
-    // Cargar tipos y categorias
     const fetchTiposYCategorias = async () => {
         try {
             const [tiposRes, categoriasRes] = await Promise.all([
-                fetch(API_TIPOS),
-                fetch(API_CATEGORIAS)
+                apiAxios.get('/product-types'),
+                apiAxios.get('/categories')
             ]);
-            const tiposData = await tiposRes.json();
-            const categoriasData = await categoriasRes.json();
-            setTiposProducto(Array.isArray(tiposData) ? tiposData : []);
-            setCategorias(Array.isArray(categoriasData) ? categoriasData : []);
+            setTiposProducto(Array.isArray(tiposRes.data) ? tiposRes.data : []);
+            setCategorias(Array.isArray(categoriasRes.data) ? categoriasRes.data : []);
         } catch {
-            // Podrías agregar manejo de errores si quieres
+            // Error silencioso al cargar tipos y categorías
         }
     };
 
@@ -119,17 +112,12 @@ function Productos() {
         };
 
 
-        const method = editingId ? 'PUT' : 'POST';
-        const url = editingId ? `${API_PRODUCTOS}/${editingId}` : API_PRODUCTOS;
-
         try {
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error('Error al guardar el producto');
+            if (editingId) {
+                await apiAxios.put(`/products/${editingId}`, payload);
+            } else {
+                await apiAxios.post('/products', payload);
+            }
 
             setMessage({ type: 'success', text: `Producto ${editingId ? 'actualizado' : 'creado'} correctamente.` });
             resetForm();
@@ -164,8 +152,7 @@ function Productos() {
     const handleDelete = async (id) => {
         if (!window.confirm('¿Eliminar este producto?')) return;
         try {
-            const res = await fetch(`${API_PRODUCTOS}/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Error al eliminar');
+            await apiAxios.delete(`/products/${id}`);
             setMessage({ type: 'success', text: 'Producto eliminado' });
             fetchProductos();
         } catch (err) {

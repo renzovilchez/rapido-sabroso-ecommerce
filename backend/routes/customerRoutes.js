@@ -1,30 +1,21 @@
 import express from 'express';
 import customerController from '../controllers/customerController.js';
+import { verifyAdmin, verifyCustomer } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// 1. Obtener todos los clientes
-router.get('/', customerController.getAll);
-
-// 2. Obtener un cliente por correo
+// Rutas públicas
+router.post('/register', customerController.create);
+router.post('/login', customerController.login);
 router.get('/email/:email', customerController.getByEmail);
 
-// 3. Obtener un cliente por ID
-router.get('/:id', customerController.getById);
+// Administración de clientes (admin only)
+router.get('/', verifyAdmin, customerController.getAll);
+router.get('/:id', verifyAdmin, customerController.getById);
 
-// 4. Crear un nuevo cliente (registro)
-router.post('/register', customerController.create);
-
-// 5. Ruta de login
-router.post('/login', customerController.login);
-
-// 6. Actualizar los datos de un cliente
-router.put('/:id', customerController.update);
-
-// 7. Actualizar los puntos del cliente
-router.put('/:id/puntos', customerController.updatePoints);
-
-// 8. Eliminar un cliente
-router.delete('/:id', customerController.delete);
+// Operaciones del propio cliente (customer only)
+router.put('/:id', verifyCustomer, customerController.update);
+router.put('/:id/puntos', verifyCustomer, customerController.updatePoints);
+router.delete('/:id', verifyCustomer, customerController.delete);
 
 export default router;

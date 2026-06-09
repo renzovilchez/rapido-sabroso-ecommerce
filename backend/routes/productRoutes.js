@@ -1,21 +1,16 @@
 import express from 'express';
 import productController from '../controllers/productController.js';
+import { verifyAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Obtener todos los productos
+// Lectura pública
 router.get('/', productController.getAllProducts);
-
-// Obtener un producto por ID
 router.get('/:id', productController.getProductById);
 
-// Crear un nuevo producto
-router.post('/', productController.createProduct);
-
-// Actualizar un producto
-router.put('/:id', productController.updateProduct);
-
-// Eliminar un producto
-router.delete('/:id', productController.deleteProduct);
+// Administración (admin)
+router.post('/', verifyAdmin, productController.createProduct);
+router.put('/:id', verifyAdmin, productController.updateProduct);
+router.delete('/:id', verifyAdmin, productController.deleteProduct);
 
 export default router;

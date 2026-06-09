@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { apiAxios } from '../../services/api';
 
 function TiposProductos() {
   const [tipos, setTipos] = useState([]);
@@ -12,27 +13,17 @@ function TiposProductos() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const TIPOS_URL = 'http://localhost:5000/api/product-types';
-  const CATS_URL = 'http://localhost:5000/api/categories';
-
-  // Carga inicial de tipos y categorías
   const fetchData = async () => {
     setLoading(true);
     try {
       const [resT, resC] = await Promise.all([
-        fetch(TIPOS_URL),
-        fetch(CATS_URL),
+        apiAxios.get('/product-types'),
+        apiAxios.get('/categories'),
       ]);
-      if (!resT.ok || !resC.ok)
-        throw new Error('Error al cargar datos');
-      const [dataT, dataC] = await Promise.all([
-        resT.json(),
-        resC.json(),
-      ]);
-      setTipos(dataT);
-      setCategorias(dataC);
+      setTipos(resT.data);
+      setCategorias(resC.data);
     } catch (err) {
-      setMessage({ type: 'error', text: err.message });
+      setMessage({ type: 'error', text: 'Error al cargar datos' });
     } finally {
       setLoading(false);
     }
@@ -53,19 +44,15 @@ function TiposProductos() {
   };
 
   const sendRequest = async (method) => {
-    const url = editingId ? `${TIPOS_URL}/${editingId}` : TIPOS_URL;
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error(`Error al ${method === 'POST' ? 'crear' : 'actualizar'}`);
+      if (method === 'POST') {
+        await apiAxios.post('/product-types', formData);
+      } else {
+        await apiAxios.put(`/product-types/${editingId}`, formData);
+      }
       setMessage({
         type: 'success',
-        text: method === 'POST'
-          ? 'Tipo creado correctamente'
-          : 'Tipo actualizado',
+        text: method === 'POST' ? 'Tipo creado correctamente' : 'Tipo actualizado',
       });
       resetForm();
       fetchData();
@@ -95,8 +82,7 @@ function TiposProductos() {
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar este tipo de producto?')) return;
     try {
-      const res = await fetch(`${TIPOS_URL}/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Error al eliminar');
+      await apiAxios.delete(`/product-types/${id}`);
       setMessage({ type: 'success', text: 'Tipo eliminado' });
       fetchData();
     } catch (err) {

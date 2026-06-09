@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { apiAxios } from '../../services/api';
 
 function Clientes() {
   const [clientes, setClientes] = useState([]);
@@ -15,14 +16,11 @@ function Clientes() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = 'http://localhost:5000/api/customers';
-
   const fetchClientes = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      setClientes(Array.isArray(data) ? data : [data]);
+      const res = await apiAxios.get('/customers');
+      setClientes(Array.isArray(res.data) ? res.data : [res.data]);
     } catch (err) {
       setMessage({ type: 'error', text: 'Error al cargar clientes' });
     } finally {
@@ -42,12 +40,7 @@ function Clientes() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/registro`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error('Error al registrar cliente');
+      await apiAxios.post('/customers/register', formData);
       setMessage({ type: 'success', text: 'Cliente registrado' });
       setFormData({
         nombre: '',
@@ -93,12 +86,7 @@ function Clientes() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/${editingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error('Error al actualizar cliente');
+      await apiAxios.put(`/customers/${editingId}`, formData);
       setMessage({ type: 'success', text: 'Cliente actualizado' });
       cancelEdit();
       fetchClientes();
@@ -110,10 +98,7 @@ function Clientes() {
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar este cliente?')) return;
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) throw new Error('Error al eliminar cliente');
+      await apiAxios.delete(`/customers/${id}`);
       setMessage({ type: 'success', text: 'Cliente eliminado' });
       fetchClientes();
     } catch (err) {
