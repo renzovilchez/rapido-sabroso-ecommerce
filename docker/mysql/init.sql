@@ -108,9 +108,9 @@ CREATE TABLE `tipo_producto` (
   `id_categoria` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Datos: admin (password: renzo)
+-- Datos: admin (password: 123456)
 INSERT INTO `admin` (`id_admin`, `nombre`, `apellidos`, `email`, `password`) VALUES
-(1, 'Renzo', 'Vilchez', 'renzo@gmail.com', '$2b$10$5/nQJ7A0C/StXgHXHLoarupXKExv.WkEzQGJHaz37S0XZ22Xp644i');
+(1, 'Renzo', 'Vilchez', 'renzo@gmail.com', '$2b$10$833YMoNtSuXyncgbptIROuGRWY8cW.Y6mT/nXdWPibJYZsGgvunSa');
 
 -- Datos: categorias
 INSERT INTO `categoria` (`id_categoria`, `nombre`) VALUES
