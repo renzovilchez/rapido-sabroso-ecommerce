@@ -34,9 +34,9 @@ const adminController = {
       if (adminFound) {
         const { password: _, ...safeData } = adminFound;
         res.json({
-          adminId: safeData.idAdmin,
-          name: safeData.nombre,
-          email: safeData.correo
+          adminId: safeData.adminId,
+          name: safeData.name,
+          email: safeData.email
         });
       } else {
         res.status(404).json({ error: 'Administrador no encontrado' });
@@ -57,8 +57,8 @@ const adminController = {
 
       const { password: _, ...safeData } = admin;
       const token = generateToken({
-        id: safeData.idAdmin,
-        email: safeData.correo,
+        id: safeData.adminId,
+        email: safeData.email,
         role: 'admin'
       });
       res.status(200).json({ 
@@ -66,9 +66,9 @@ const adminController = {
         message: 'Login exitoso',
         token,
         admin: {
-          adminId: safeData.idAdmin,
-          name: safeData.nombre,
-          email: safeData.correo
+          adminId: safeData.adminId,
+          name: safeData.name,
+          email: safeData.email
         }
       });
     } catch (err) {
