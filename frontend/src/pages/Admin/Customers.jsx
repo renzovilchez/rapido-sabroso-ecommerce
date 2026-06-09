@@ -21,7 +21,7 @@ function Clientes() {
     try {
       const res = await apiAxios.get('/customers');
       setClientes(Array.isArray(res.data) ? res.data : [res.data]);
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'Error al cargar clientes' });
     } finally {
       setLoading(false);

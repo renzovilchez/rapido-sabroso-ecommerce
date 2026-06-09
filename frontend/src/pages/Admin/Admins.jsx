@@ -4,8 +4,7 @@ import { apiAxios } from '../../services/api';
 function Administradores() {
   const [admins, setAdmins] = useState([]);
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellidos: '',
+    name: '',
     email: '',
     password: ''
   });
@@ -39,7 +38,7 @@ function Administradores() {
     try {
       await apiAxios.post('/admins', formData);
       setMessage({ type: 'success', text: 'Administrador registrado' });
-      setFormData({ nombre: '', apellidos: '', email: '', password: '' });
+      setFormData({ name: '', email: '', password: '' });
       fetchAdmins();
     } catch {
       setMessage({ type: 'error', text: 'Error al registrar' });
@@ -47,10 +46,9 @@ function Administradores() {
   };
 
   const startEdit = (admin) => {
-    setEditingId(admin.id_admin);
+    setEditingId(admin.adminId);
     setFormData({
-      nombre: admin.nombre,
-      apellidos: admin.apellidos,
+      name: admin.name,
       email: admin.email,
       password: ''
     });
@@ -58,7 +56,7 @@ function Administradores() {
 
   const cancelEdit = () => {
     setEditingId(null);
-    setFormData({ nombre: '', apellidos: '', email: '', password: '' });
+    setFormData({ name: '', email: '', password: '' });
   };
 
   const handleUpdate = async (e) => {
@@ -97,8 +95,7 @@ function Administradores() {
       <form onSubmit={editingId ? handleUpdate : handleCreate} className="bg-white p-6 rounded shadow mb-6">
         <h2 className="text-xl font-semibold mb-4">{editingId ? 'Editar' : 'Registrar'} Administrador</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" className="border px-3 py-2 rounded" required />
-          <input name="apellidos" value={formData.apellidos} onChange={handleChange} placeholder="Apellidos" className="border px-3 py-2 rounded" required />
+          <input name="name" value={formData.name} onChange={handleChange} placeholder="Nombre completo" className="border px-3 py-2 rounded" required />
           <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Email" className="border px-3 py-2 rounded" required />
           <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder={editingId ? 'Nueva contraseña (opcional)' : 'Contraseña'} className="border px-3 py-2 rounded" />
         </div>
@@ -127,12 +124,12 @@ function Administradores() {
           </thead>
           <tbody>
             {admins.map((admin) => (
-              <tr key={admin.id_admin} className="even:bg-gray-100">
-                <td className="border px-4 py-2">{admin.nombre} {admin.apellidos}</td>
+              <tr key={admin.adminId} className="even:bg-gray-100">
+                <td className="border px-4 py-2">{admin.name}</td>
                 <td className="border px-4 py-2">{admin.email}</td>
                 <td className="border px-4 py-2 text-center space-x-2">
                   <button onClick={() => startEdit(admin)} className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded">Editar</button>
-                  <button onClick={() => handleDelete(admin.id_admin)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Eliminar</button>
+                  <button onClick={() => handleDelete(admin.adminId)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Eliminar</button>
                 </td>
               </tr>
             ))}

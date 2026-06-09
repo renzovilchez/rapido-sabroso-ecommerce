@@ -9,7 +9,7 @@ function CategoryDetail() {
   const { tipo } = useParams(); // URL param (slug)
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const { cartItemCount, setCartItemCount } = useContext(GlobalContext);
+  const { setCartItemCount } = useContext(GlobalContext);
   const hasLoadedLocalStorage = useRef(false);
   const [loading, setLoading] = useState(true);
 

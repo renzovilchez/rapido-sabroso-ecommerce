@@ -36,9 +36,6 @@ export { axiosInstance as apiAxios };
 export const api = {
   getMetodosPago: () => axiosInstance.get('/payment-methods'),
   crearMetodoPago: (data) => axiosInstance.post('/payment-methods', data),
-  getClientePorCorreo: (email) => axiosInstance.get(`/customers/email/${email}`),
   crearPedido: (data) => axiosInstance.post('/orders', data),
-  getPedido: (id) => axiosInstance.get(`/orders/${id}`),
-  crearComprobante: (data) => axiosInstance.post('/receipts', data),
   getComprobantePorPedido: (id) => axiosInstance.get(`/receipts/order/${id}`),
 };

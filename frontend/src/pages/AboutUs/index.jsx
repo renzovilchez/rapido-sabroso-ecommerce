@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Target, Eye, ListChecks, HeartHandshake } from 'lucide-react';
-import { motion } from 'framer-motion';
 import RotatingCard from '../../components/RotatingCard';
 import CarlosImage from '../../assets/images/CarlosMendoza.jfif';
 import MarianaImage from '../../assets/images/MarianaTorres.jfif';

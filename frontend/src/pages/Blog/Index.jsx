@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 const blogPosts = [
   { title: 'Historia de cómo surgió nuestro sueño', path: '/blog/historia' },

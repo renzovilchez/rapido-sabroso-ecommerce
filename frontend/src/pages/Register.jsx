@@ -36,8 +36,6 @@ const Register = () => {
       return;
     }
 
-    const direccionCompuesta = `Trujillo - ${formData.distrito} - ${formData.calle}`;
-
     const datosFinales = {
       nombre: formData.nombre,
       apellidos: formData.apellidos,

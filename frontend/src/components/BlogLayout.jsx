@@ -1,4 +1,4 @@
-const BlogLayout = ({ title, subtitle, image, children, relatedLinks = [] }) => {
+const BlogLayout = ({ title, image, children, relatedLinks = [] }) => {
   return (
     <div className="bg-white text-gray-900">
       <header className="bg-yellow-500 text-white py-8 text-center shadow-md">

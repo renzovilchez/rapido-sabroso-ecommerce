@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import OrderSummary from "../components/OrderSummary";
 import PaymentForm from "../components/PaymentForm";
 

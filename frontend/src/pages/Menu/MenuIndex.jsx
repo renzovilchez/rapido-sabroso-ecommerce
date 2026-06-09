@@ -6,15 +6,12 @@ import BannerCarousel from "../../components/Menu/BannerCarousel";
 import { normalizeString } from "../../utils/stringUtils";
 import { 
   getComboIcon, 
-  getProductIcon, 
-  getCategoryHeroImage 
+  getProductIcon
 } from "../../utils/categoryUtils";
 import { 
-  ChevronRight, 
   ArrowRight,
   Utensils,
-  Flame,
-  GlassWater
+  Flame
 } from "lucide-react";
 
 function MenuIndex() {
@@ -54,12 +51,6 @@ function MenuIndex() {
       ? `/carta/combo/${normalizeString(category)}` 
       : `/carta/${normalizeString(category)}`;
     
-    // Group categories for hero images
-    let group = "generic";
-    if (isCombo) group = "combo";
-    else if (category.toLowerCase().includes("hamburguesa")) group = "hamburguesa";
-    else if (category.toLowerCase().includes("bebida") || category.toLowerCase().includes("refresco")) group = "bebida";
-
     return (
       <Link
         key={category}

@@ -22,7 +22,7 @@ function TiposProductos() {
       ]);
       setTipos(resT.data);
       setCategorias(resC.data);
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'Error al cargar datos' });
     } finally {
       setLoading(false);

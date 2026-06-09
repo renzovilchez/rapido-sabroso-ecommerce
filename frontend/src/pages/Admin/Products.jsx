@@ -160,10 +160,6 @@ function Productos() {
         }
     };
 
-    // Funciones para mostrar nombres desde ids
-    const nombreTipo = (id) => tiposProducto.find(t => t.id_tipo_producto === id)?.nombre || '';
-    const nombreCategoria = (id) => categorias.find(c => c.id_categoria === id)?.nombre || '';
-
     return (
         <div className="max-w-6xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6 text-center">Administrar Productos</h1>

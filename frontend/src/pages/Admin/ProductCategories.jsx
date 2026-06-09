@@ -13,7 +13,7 @@ function CategoriasProductos() {
     try {
       const res = await apiAxios.get('/categories/with-types/all');
       setCategorias(res.data);
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'Error al cargar las categorías' });
     } finally {
       setLoading(false);
@@ -48,8 +48,8 @@ function CategoriasProductos() {
 
   // Editar
   const startEdit = (categoria) => {
-    setEditingId(categoria._id);
-    setFormData({ nombre: categoria.nombre });
+    setEditingId(categoria.categoryId);
+    setFormData({ nombre: categoria.name });
   };
 
   const cancelEdit = () => {
@@ -146,11 +146,11 @@ function CategoriasProductos() {
           </thead>
           <tbody>
             {categorias.map((cat) => (
-              <tr key={cat._id} className="even:bg-gray-100 hover:bg-gray-200 transition">
-                <td className="border px-4 py-2">{cat.nombre}</td>
+              <tr key={cat.categoryId} className="even:bg-gray-100 hover:bg-gray-200 transition">
+                <td className="border px-4 py-2">{cat.name}</td>
                 <td className="border px-4 py-2">
-                  {cat.tipos && cat.tipos.length > 0
-                    ? cat.tipos.map((tipo) => tipo.nombre).join(', ')
+                  {cat.types && cat.types.length > 0
+                    ? cat.types.map((tipo) => tipo.name).join(', ')
                     : '—'}
                 </td>
                 <td className="border px-4 py-2 text-center space-x-2">
@@ -161,7 +161,7 @@ function CategoriasProductos() {
                     Editar
                   </button>
                   <button
-                    onClick={() => handleDelete(cat._id)}
+                    onClick={() => handleDelete(cat.categoryId)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
                   >
                     Eliminar

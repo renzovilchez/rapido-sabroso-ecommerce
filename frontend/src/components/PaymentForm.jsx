@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { api } from "../services/api";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import NewMethodForm from "./NewMethodForm";
@@ -9,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const PaymentForm = () => {
   const { customer, updateField } = useCustomer();
-  const { cart, total } = useCart();
+  const { cart } = useCart();
 
   const [newMethod, setNewMethod] = useState({ name: "", number: "" });
   const [showForm, setShowForm] = useState(false);
@@ -126,16 +125,14 @@ const PaymentForm = () => {
       // Clean null or empty fields
       const cleanObject = (obj) =>
         Object.fromEntries(
-          Object.entries(obj).filter(([_, v]) => v !== null && v !== "" && v !== undefined)
+          Object.entries(obj).filter(([, v]) => v !== null && v !== "" && v !== undefined)
         );
 
       const cleanedOrder = cleanObject(order);
-      console.log("Pedido a enviar:", cleanedOrder);
       const orderRes = await api.crearPedido(cleanedOrder);
       
       localStorage.removeItem("carrito");
       navigate("/comprobante/" + orderRes.data.orderId);
-      console.log(orderRes.data)
     } catch (error) {
       console.error("Error al registrar el pedido:", error);
       alert("Ocurrió un error al confirmar el pago.");

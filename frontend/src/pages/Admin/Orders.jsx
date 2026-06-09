@@ -14,7 +14,7 @@ function Pedidos() {
       const res = await apiAxios.get("/orders");
       const data = res.data;
       setPedidos(Array.isArray(data) ? data : [data]);
-    } catch (err) {
+    } catch {
       setMessage({ type: "error", text: "Error al cargar pedidos" });
     } finally {
       setLoading(false);
@@ -29,7 +29,7 @@ function Pedidos() {
         ? data.filter((d) => d.id_pedido === id_pedido)
         : [];
       setDetalles((prev) => ({ ...prev, [id_pedido]: filtrados }));
-    } catch (err) {
+    } catch {
       setMessage({
         type: "error",
         text: "Error al cargar detalles del pedido",
